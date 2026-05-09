@@ -36,13 +36,10 @@ const formatMarkdown = (text) => {
   });
 };
 
-// --- COMPONENTS ---
 const NoteEditor = ({ note, onSave, onCancel, onDelete }) => {
   const [localNote, setLocalNote] = useState(note);
   const [viewMode, setViewMode] = useState('edit');
   useEffect(() => { setLocalNote(note); }, [note.id]);
-  const handleSave = () => onSave(localNote);
-
   return (
     <div className="fixed inset-0 lg:relative z-[100] flex flex-col h-full bg-[#020617] lg:rounded-[32px] overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-300">
       <div className="p-4 border-b border-indigo-900/30 flex justify-between items-center bg-[#0f172a]/50 backdrop-blur-md">
@@ -51,7 +48,7 @@ const NoteEditor = ({ note, onSave, onCancel, onDelete }) => {
           <button onClick={() => setViewMode('preview')} className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all ${viewMode === 'preview' ? 'bg-indigo-600 text-white shadow-lg' : 'text-indigo-300/50'}`}>Preview</button>
         </div>
         <div className="flex gap-2">
-          <button onClick={handleSave} className="bg-emerald-600 text-white p-2.5 rounded-xl active:scale-90"><Save size={18} /></button>
+          <button onClick={() => onSave(localNote)} className="bg-emerald-600 text-white p-2.5 rounded-xl active:scale-90"><Save size={18} /></button>
           <button onClick={() => onDelete(localNote.id)} className="bg-rose-600/20 text-rose-500 p-2.5 rounded-xl active:scale-90"><Trash2 size={18} /></button>
           <button onClick={onCancel} className="text-indigo-300 p-2.5"><X size={24} /></button>
         </div>
@@ -85,7 +82,7 @@ const SubjectModal = ({ exam, onClose, resources, notes, confidence, onConfidenc
             <h3 className="text-2xl lg:text-4xl font-black text-white italic uppercase tracking-tighter">{exam.subject}</h3>
             <span className="bg-black/20 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black text-white uppercase mt-3 inline-block border border-white/10">{exam.status}</span>
           </div>
-          <button onClick={onClose} className="bg-black/20 p-2.5 rounded-full hover:bg-black/40 transition-all border border-white/10 relative z-10"><X size={24} text="white" /></button>
+          <button onClick={onClose} className="bg-black/20 p-2.5 rounded-full hover:bg-black/40 transition-all border border-white/10 relative z-10"><X size={24} color="white" /></button>
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         </div>
         <div className="flex-1 overflow-y-auto p-6 lg:p-10 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 bg-[#020617] custom-scrollbar">
@@ -119,7 +116,7 @@ const SubjectModal = ({ exam, onClose, resources, notes, confidence, onConfidenc
           <div className="space-y-8">
             <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest px-2 flex items-center gap-2 italic"><LinkIcon size={14} /> Material assets</h4>
             <div className="space-y-3">
-              {subRes.map(res => <a key={res.id} href={res.url} target="_blank" className="flex items-center justify-between p-5 bg-[#0f172a] border border-indigo-900/20 rounded-2xl hover:border-indigo-500 transition-all shadow-xl group active:scale-95"><span className="text-sm font-bold text-white italic group-hover:text-indigo-400 truncate max-w-[200px]">{res.title}</span><ExternalLink size={16} className="text-indigo-500 group-hover:text-white" /></a>)}
+              {subRes.map(res => <a key={res.id} href={res.url} target="_blank" rel="noreferrer" className="flex items-center justify-between p-5 bg-[#0f172a] border border-indigo-900/20 rounded-2xl hover:border-indigo-500 transition-all shadow-xl group active:scale-95"><span className="text-sm font-bold text-white italic group-hover:text-indigo-400 truncate max-w-[200px]">{res.title}</span><ExternalLink size={16} className="text-indigo-500 group-hover:text-white" /></a>)}
             </div>
             <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest pt-4 px-2 flex items-center gap-2 italic"><StickyNote size={14} /> Subject Briefs</h4>
             <div className="space-y-4 pb-10">
@@ -139,4 +136,70 @@ const App = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedExam, setSelectedExam] = useState(null);
   const [activeNoteId, setActiveNoteId] = useState(null);
-  const
+  const [selectedDate, setSelectedDate] = useState(19);
+  const [selectedSubjectId, setSelectedSubjectId] = useState('macro');
+  const [newTaskText, setNewTaskText] = useState('');
+  const [newResTitle, setNewResTitle] = useState('');
+  const [newResUrl, setNewResUrl] = useState('');
+  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [isActive, setIsActive] = useState(false);
+
+  const [tasks, setTasks] = useState([]);
+  const [resources, setResources] = useState([]);
+  const [notes, setNotes] = useState([]);
+  const [confidence, setConfidence] = useState({});
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const fetchData = async () => {
+      const { data } = await supabase.from('command_pro_data').select('*');
+      if (data) {
+        data.forEach(row => {
+          if (row.id === 'tasks') setTasks(row.content || []);
+          if (row.id === 'notes') setNotes(row.content || []);
+          if (row.id === 'confidence') setConfidence(row.content || {});
+          if (row.id === 'resources') setResources(row.content || []);
+        });
+      }
+    };
+    fetchData();
+    const channel = supabase.channel('sync').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'command_pro_data' }, (p) => {
+      if (p.new.id === 'tasks') setTasks(p.new.content);
+      if (p.new.id === 'notes') setNotes(p.new.content);
+      if (p.new.id === 'confidence') setConfidence(p.new.content);
+      if (p.new.id === 'resources') setResources(p.new.content);
+    }).subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [isAuthenticated]);
+
+  const sync = async (id, content) => { await supabase.from('command_pro_data').upsert({ id, content }); };
+
+  useEffect(() => {
+    let interval;
+    if (isActive && timeLeft > 0) interval = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
+    return () => clearInterval(interval);
+  }, [isActive, timeLeft]);
+
+  const stats = useMemo(() => {
+    const academics = EXAM_DATA;
+    const avgReady = Math.round(academics.reduce((sum, e) => sum + (parseInt(confidence[e.id]) || 0), 0) / academics.length) || 0;
+    return { critical: EXAM_DATA.filter(d => d.status.includes('CRITICAL')).length, avgReady, noteCount: notes.length, taskDone: tasks.filter(t => t.completed).length };
+  }, [notes, tasks, confidence]);
+
+  const handleConf = (id, val) => {
+    const updated = { ...confidence, [id]: val };
+    setConfidence(updated);
+    sync('confidence', updated);
+  };
+
+  if (!isAuthenticated) return (
+    <div className="min-h-screen bg-[#020617] flex items-center justify-center p-6 font-sans">
+      <form onSubmit={(e) => { e.preventDefault(); if(pass === 'Foxtrot@116') setIsAuthenticated(true); }} className="bg-[#0f172a] border border-indigo-900/30 p-8 lg:p-12 rounded-[40px] w-full max-w-md shadow-[0_0_100px_-10px_rgba(99,102,241,0.2)] space-y-10 animate-in zoom-in duration-500">
+        <div className="flex flex-col items-center text-center space-y-5">
+          <div className="w-20 h-20 bg-indigo-600/10 rounded-[30%] flex items-center justify-center border border-indigo-500/20 shadow-[0_0_30px_rgba(99,102,241,0.1)]"><Lock className="text-indigo-500 w-10 h-10" /></div>
+          <div>
+            <h1 className="text-3xl font-black text-white italic uppercase tracking-tighter">Command <span className="text-indigo-500">Pro</span></h1>
+            <p className="text-indigo-400/40 text-[10px] font-black uppercase tracking-[0.4em] mt-2">Security Protocol Active</p>
+          </div>
+        </div>
+        <input type="password" value={pass} onChange={(e) => setPass(e.target.value)} placeholder="Access Key..." className="w-full bg-[#020617] border border-indigo-900/50 rounded-2xl p-6 text-white font-black text-center outline
