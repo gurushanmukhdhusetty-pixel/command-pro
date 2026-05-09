@@ -144,8 +144,6 @@ const formatMarkdown = (text) => {
   });
 };
 
-// --- SUB-COMPONENTS (Isolated to fix re-rendering/typing bugs) ---
-
 const NoteEditor = ({ note, onSave, onCancel, onDelete }) => {
   const [localNote, setLocalNote] = useState(note);
   const [viewMode, setViewMode] = useState('edit');
@@ -280,8 +278,6 @@ const SubjectModal = ({ exam, onClose, resources, notes, confidence, onConfidenc
   );
 };
 
-// --- MAIN APP COMPONENT ---
-
 const App = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedExam, setSelectedExam] = useState(null);
@@ -289,17 +285,14 @@ const App = () => {
   const [selectedDate, setSelectedDate] = useState(21);
   const [selectedSubjectId, setSelectedSubjectId] = useState('macro');
   
-  // Forms state
   const [newTaskText, setNewTaskText] = useState('');
   const [newResTitle, setNewResTitle] = useState('');
   const [newResUrl, setNewResUrl] = useState('');
 
-  // Pomodoro state
   const [timerMode, setTimerMode] = useState('work');
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isActive, setIsActive] = useState(false);
 
-  // Persistence (LocalStorage)
   const [tasks, setTasks] = useState(() => JSON.parse(localStorage.getItem('e-tasks-v7') || '[]'));
   const [resources, setResources] = useState(() => JSON.parse(localStorage.getItem('e-res-v7') || '[]'));
   const [notes, setNotes] = useState(() => JSON.parse(localStorage.getItem('e-notes-v7') || '[]'));
@@ -312,7 +305,6 @@ const App = () => {
     localStorage.setItem('e-conf-v7', JSON.stringify(confidence));
   }, [tasks, resources, notes, confidence]);
 
-  // Pomodoro Interval
   useEffect(() => {
     let interval;
     if (isActive && timeLeft > 0) interval = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
@@ -341,7 +333,6 @@ const App = () => {
   return (
     <div className="min-h-screen bg-[#0a0f18] text-slate-200 font-sans pb-24 lg:pb-0 selection:bg-blue-500/30">
       
-      {/* Navigation - Sidebar (Lg) / Bottom (Sm) */}
       <nav className="fixed bottom-0 left-0 right-0 z-[70] bg-[#0a0f18]/95 backdrop-blur-xl border-t border-slate-800 lg:top-0 lg:left-0 lg:w-20 lg:h-full lg:flex-col lg:border-r lg:border-t-0 flex justify-around items-center p-4">
         {[
           { id: 'overview', icon: <LayoutDashboard className="w-6 h-6" /> },
@@ -361,11 +352,10 @@ const App = () => {
 
       <main className="max-w-7xl mx-auto px-6 py-10 lg:pl-32">
         
-        {/* Header Area with Pomodoro */}
         <header className="mb-12 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-center md:text-left">
              <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter italic uppercase">COMMAND <span className="text-blue-500">PRO</span></h1>
-             <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.3em] mt-3">Shanmukh Dhusetty • Readiness System 2026</p>
+             <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.3em] mt-3">Academic Readiness System 2026</p>
           </div>
 
           <div className="bg-[#0f172a] border border-slate-800 rounded-3xl p-4 flex items-center gap-6 shadow-2xl">
@@ -379,8 +369,6 @@ const App = () => {
              </div>
           </div>
         </header>
-
-        {/* --- TABS RENDERING --- */}
 
         {activeTab === 'overview' && (
           <div className="animate-in fade-in duration-700 space-y-12 pb-20">
@@ -567,7 +555,6 @@ const App = () => {
            <div className="animate-in zoom-in-95 duration-700 space-y-12 pb-20">
               <div className="flex flex-col lg:flex-row gap-10">
                  
-                 {/* GRID SECTION */}
                  <div className="flex-1 bg-[#0f172a] border border-slate-800 rounded-[50px] p-10 shadow-2xl">
                     <div className="flex justify-between items-center mb-12 px-2">
                        <h2 className="text-3xl font-black text-white flex items-center gap-4 italic uppercase tracking-tighter">PLANNER <span className="text-blue-500">2026</span></h2>
@@ -599,11 +586,10 @@ const App = () => {
                                {hasCritical && !isSelected && <div className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping" />}
                             </button>
                           );
-                        })}
+                       })}
                     </div>
                  </div>
 
-                 {/* DETAIL PANE */}
                  <div className="w-full lg:w-[400px] shrink-0">
                     <div className="bg-[#0f172a] border border-slate-800 rounded-[50px] p-10 shadow-2xl h-full min-h-[550px] flex flex-col sticky top-28">
                        <div className="flex items-center gap-7 mb-12">
@@ -656,7 +642,6 @@ const App = () => {
         )}
       </main>
 
-      {/* --- FLOATING MODAL --- */}
       {selectedExam && (
         <SubjectModal 
           exam={selectedExam} 
@@ -668,7 +653,6 @@ const App = () => {
         />
       )}
 
-      {/* --- BACKGROUND ACCENTS --- */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 overflow-hidden">
          <div className="absolute top-0 right-0 w-[1000px] h-[1000px] bg-blue-600/[0.03] blur-[150px] rounded-full"></div>
          <div className="absolute bottom-0 left-0 w-[1000px] h-[1000px] bg-purple-600/[0.03] blur-[150px] rounded-full"></div>
@@ -680,6 +664,7 @@ const App = () => {
 };
 
 export default App;
+
 import ReactDOM from 'react-dom/client';
 const rootElement = document.getElementById('root');
 if (rootElement) {
