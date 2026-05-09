@@ -41,29 +41,31 @@ const NoteEditor = ({ note, onSave, onCancel, onDelete }) => {
   const [localNote, setLocalNote] = useState(note);
   const [viewMode, setViewMode] = useState('edit');
   useEffect(() => { setLocalNote(note); }, [note.id]);
-  const handleSave = () => onSave(localNote);
 
   return (
-    <div className="flex flex-col h-full bg-[#0f172a] border border-slate-800 rounded-[32px] overflow-hidden shadow-2xl animate-in slide-in-from-right duration-300">
+    <div className="fixed inset-0 lg:relative z-[80] flex flex-col h-full bg-[#0f172a] lg:border border-slate-800 lg:rounded-[32px] overflow-hidden shadow-2xl animate-in slide-in-from-bottom lg:animate-none">
       <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
-        <div className="flex gap-2">
-          <button onClick={() => setViewMode('edit')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase ${viewMode === 'edit' ? 'bg-blue-600 text-white' : 'text-slate-500'}`}>Edit</button>
-          <button onClick={() => setViewMode('preview')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase ${viewMode === 'preview' ? 'bg-blue-600 text-white' : 'text-slate-500'}`}>Preview</button>
+        <div className="flex gap-1 lg:gap-2">
+          <button onClick={() => setViewMode('edit')} className={`px-3 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${viewMode === 'edit' ? 'bg-blue-600 text-white' : 'text-slate-500'}`}>Edit</button>
+          <button onClick={() => setViewMode('preview')} className={`px-3 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${viewMode === 'preview' ? 'bg-blue-600 text-white' : 'text-slate-500'}`}>Preview</button>
         </div>
-        <div className="flex gap-2">
-          <button onClick={handleSave} className="bg-green-600 text-white p-2 rounded-xl hover:bg-green-500"><Save size={16} /></button>
-          <button onClick={() => onDelete(localNote.id)} className="bg-red-600/10 text-red-500 p-2 rounded-xl hover:bg-red-600"><Trash2 size={16} /></button>
-          <button onClick={onCancel} className="text-slate-500 p-2"><X size={16} /></button>
+        <div className="flex gap-1 lg:gap-2">
+          <button onClick={() => onSave(localNote)} className="bg-green-600 text-white p-2 rounded-xl active:scale-90"><Save size={16} /></button>
+          <button onClick={() => onDelete(localNote.id)} className="bg-red-600/10 text-red-500 p-2 rounded-xl active:scale-90"><Trash2 size={16} /></button>
+          <button onClick={onCancel} className="text-slate-500 p-2"><X size={20} /></button>
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto p-5 lg:p-8 custom-scrollbar">
         {viewMode === 'edit' ? (
-          <div className="space-y-6">
-            <input value={localNote.title || ''} onChange={(e) => setLocalNote({...localNote, title: e.target.value})} placeholder="Title..." className="w-full bg-transparent text-3xl font-black text-white outline-none italic" />
-            <textarea value={localNote.content || ''} onChange={(e) => setLocalNote({...localNote, content: e.target.value})} className="w-full h-[500px] bg-transparent text-slate-300 text-sm outline-none resize-none" />
+          <div className="space-y-4 lg:space-y-6">
+            <input value={localNote.title || ''} onChange={(e) => setLocalNote({...localNote, title: e.target.value})} placeholder="Title..." className="w-full bg-transparent text-2xl lg:text-3xl font-black text-white outline-none italic" />
+            <textarea value={localNote.content || ''} onChange={(e) => setLocalNote({...localNote, content: e.target.value})} className="w-full h-[60vh] bg-transparent text-slate-300 text-sm outline-none resize-none" placeholder="Start typing..." />
           </div>
         ) : (
-          <div className="prose prose-invert">{formatMarkdown(localNote.content)}</div>
+          <div className="animate-in fade-in">
+            <h1 className="text-3xl font-black text-white mb-2 italic uppercase">{localNote.title || 'Untitled'}</h1>
+            <div className="prose prose-invert max-w-full">{formatMarkdown(localNote.content)}</div>
+          </div>
         )}
       </div>
     </div>
@@ -74,25 +76,25 @@ const SubjectModal = ({ exam, onClose, resources, notes, confidence, onConfidenc
   const subNotes = notes.filter(n => n.subjectId === exam.id);
   const subRes = resources.filter(r => r.subjectId === exam.id);
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#05080f]/95 backdrop-blur-md">
-      <div className="bg-[#0f172a] border border-slate-800 w-full max-w-4xl rounded-[40px] overflow-hidden max-h-[90vh] flex flex-col shadow-2xl">
-        <div className={`p-8 ${exam.color} flex justify-between items-start shrink-0`}>
+    <div className="fixed inset-0 z-[100] flex items-end lg:items-center justify-center p-0 lg:p-4 bg-[#05080f]/95 backdrop-blur-md animate-in fade-in">
+      <div className="bg-[#0f172a] border-t lg:border border-slate-800 w-full max-w-4xl rounded-t-[32px] lg:rounded-[40px] overflow-hidden max-h-[90vh] flex flex-col shadow-2xl">
+        <div className={`p-6 lg:p-8 ${exam.color} flex justify-between items-start shrink-0`}>
           <div>
-            <h3 className="text-3xl font-black text-white italic uppercase">{exam.subject}</h3>
-            <span className="bg-white/20 px-3 py-1 rounded-full text-[10px] font-black text-white uppercase mt-4 inline-block">{exam.status}</span>
+            <h3 className="text-xl lg:text-3xl font-black text-white italic uppercase">{exam.subject}</h3>
+            <span className="bg-white/20 px-3 py-1 rounded-full text-[9px] lg:text-[10px] font-black text-white uppercase mt-2 inline-block">{exam.status}</span>
           </div>
-          <button onClick={onClose} className="bg-white/20 p-2 rounded-full hover:bg-white/30 transition-colors"><X size={20} /></button>
+          <button onClick={onClose} className="bg-white/20 p-2 rounded-full hover:bg-white/30 transition-all"><X size={20} /></button>
         </div>
-        <div className="flex-1 overflow-y-auto p-8 grid grid-cols-1 md:grid-cols-2 gap-10 bg-gradient-to-b from-[#0f172a] to-[#0a0f18] custom-scrollbar">
-          <div className="space-y-8">
-            <div className="bg-slate-900/50 p-7 rounded-[32px] border border-slate-800 space-y-4 shadow-xl">
-              <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 italic"><Gauge size={14} className="text-blue-500" /> Readiness: {confidence[exam.id] || 0}%</h4>
-              <input type="range" min="0" max="100" value={confidence[exam.id] || 0} onChange={(e) => onConfidenceUpdate(exam.id, e.target.value)} className="w-full h-2 accent-blue-500 cursor-pointer bg-slate-800 rounded-lg appearance-none" />
+        <div className="flex-1 overflow-y-auto p-6 lg:p-8 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10 bg-gradient-to-b from-[#0f172a] to-[#0a0f18] custom-scrollbar">
+          <div className="space-y-6 lg:space-y-8">
+            <div className="bg-slate-900/50 p-5 lg:p-7 rounded-[24px] lg:rounded-[32px] border border-slate-800 space-y-4">
+              <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2"><Gauge size={14} className="text-blue-500" /> Readiness: {confidence[exam.id] || 0}%</h4>
+              <input type="range" min="0" max="100" value={confidence[exam.id] || 0} onChange={(e) => onConfidenceUpdate(exam.id, e.target.value)} className="w-full h-3 accent-blue-500 cursor-pointer bg-slate-800 rounded-lg appearance-none" />
             </div>
-            <div className="bg-slate-900/50 p-7 rounded-[32px] border border-slate-800 space-y-6 shadow-xl">
+            <div className="bg-slate-900/50 p-5 lg:p-7 rounded-[24px] lg:rounded-[32px] border border-slate-800 space-y-6 shadow-xl">
               <div className="flex justify-between items-end">
-                <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic font-black">Intelligence</h4>
-                <div className="text-right"><span className="text-[8px] font-black text-slate-500 uppercase block mb-1">Internal sum</span><span className="text-2xl font-black text-white italic leading-none">{exam.internal || 0} Marks</span></div>
+                <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic font-black">Analytics</h4>
+                <div className="text-right"><span className="text-[8px] font-black text-slate-500 uppercase block mb-1">Internal sum</span><span className="text-xl font-black text-white italic leading-none">{exam.internal || 0} Marks</span></div>
               </div>
               <div className="space-y-4">
                 {exam.breakdown?.map((b, i) => (
@@ -102,19 +104,21 @@ const SubjectModal = ({ exam, onClose, resources, notes, confidence, onConfidenc
                   </div>
                 ))}
                 <div className="pt-6 border-t border-slate-800 flex justify-between items-center">
-                   <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Goal threshold</span>
-                   <span className={`text-2xl font-black italic ${exam.needed === 0 ? 'text-green-500' : 'text-red-500'}`}>{exam.needed} MARKS</span>
+                   <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Goal Threshold</span>
+                   <span className={`text-lg lg:text-2xl font-black italic ${exam.needed === 0 ? 'text-green-500' : 'text-red-500'}`}>{exam.needed} MARKS</span>
                 </div>
               </div>
             </div>
           </div>
           <div className="space-y-6">
-            <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 flex items-center gap-2 italic"><LinkIcon size={14} /> Material assets</h4>
+            <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 flex items-center gap-2 italic"><LinkIcon size={14} /> Materials</h4>
             <div className="space-y-3">
-              {subRes.map(res => <a key={res.id} href={res.url} target="_blank" className="flex items-center justify-between p-5 bg-slate-900 border border-slate-800 rounded-2xl hover:border-blue-500 transition-all shadow-lg group"><span className="text-xs font-bold text-white italic group-hover:text-blue-400">{res.title}</span><ExternalLink size={12} className="text-slate-500 group-hover:text-blue-500" /></a>)}
+              {subRes.map(res => <a key={res.id} href={res.url} target="_blank" className="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-2xl hover:border-blue-500 transition-all shadow-lg active:scale-95"><span className="text-xs font-bold text-white italic truncate max-w-[180px]">{res.title}</span><ExternalLink size={12} className="text-slate-500" /></a>)}
             </div>
-            <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest pt-4 flex items-center gap-2 italic px-2"><StickyNote size={14} /> Subject Briefs</h4>
-            {subNotes.map(note => <div key={note.id} className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] shadow-lg"><h5 className="text-white font-black mb-2 italic">{note.title}</h5><p className="text-xs text-slate-500 italic line-clamp-3 leading-relaxed">{note.content}</p></div>)}
+            <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 pt-4 flex items-center gap-2 italic"><StickyNote size={14} /> Subject Briefs</h4>
+            <div className="space-y-4">
+              {subNotes.map(note => <div key={note.id} className="p-5 bg-slate-900 border border-slate-800 rounded-[24px] shadow-lg"><h5 className="text-white font-black mb-2 italic">{note.title}</h5><p className="text-xs text-slate-500 italic line-clamp-3 leading-relaxed">{note.content}</p></div>)}
+            </div>
           </div>
         </div>
       </div>
@@ -186,86 +190,141 @@ const App = () => {
   };
 
   if (!isAuthenticated) return (
-    <div className="min-h-screen bg-[#0a0f18] flex items-center justify-center p-6">
-      <form onSubmit={(e) => { e.preventDefault(); if(pass === 'Foxtrot@116') setIsAuthenticated(true); }} className="bg-[#0f172a] border border-slate-800 p-10 rounded-[40px] w-full max-w-md shadow-2xl space-y-8 animate-in zoom-in duration-500">
+    <div className="min-h-screen bg-[#0a0f18] flex items-center justify-center p-6 font-sans">
+      <form onSubmit={(e) => { e.preventDefault(); if(pass === 'Foxtrot@116') setIsAuthenticated(true); }} className="bg-[#0f172a] border border-slate-800 p-8 lg:p-10 rounded-[40px] w-full max-w-md shadow-2xl space-y-8 animate-in zoom-in duration-500">
         <div className="flex flex-col items-center text-center space-y-4">
           <div className="w-16 h-16 bg-blue-500/10 rounded-3xl flex items-center justify-center border border-blue-500/20 shadow-xl"><Lock className="text-blue-500 w-8 h-8" /></div>
           <h1 className="text-2xl font-black text-white italic uppercase">Command <span className="text-blue-500">Pro</span></h1>
-          <p className="text-slate-500 text-[10px] font-black uppercase">Security Protocol Active</p>
+          <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest leading-none italic">Security Protocol Active</p>
         </div>
-        <input type="password" value={pass} onChange={(e) => setPass(e.target.value)} placeholder="Access Key..." className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-5 text-white font-black text-center outline-none focus:ring-4 focus:ring-blue-500/10" />
-        <button type="submit" className="w-full bg-blue-600 text-white p-5 rounded-2xl font-black uppercase shadow-xl hover:bg-blue-500">Verify Intel</button>
+        <input type="password" value={pass} onChange={(e) => setPass(e.target.value)} placeholder="Access Key..." className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-5 text-white font-black text-center outline-none focus:ring-4 focus:ring-blue-500/10 transition-all" />
+        <button type="submit" className="w-full bg-blue-600 text-white p-5 rounded-2xl font-black uppercase shadow-xl hover:bg-blue-500 active:scale-95 transition-all">Verify Intel</button>
       </form>
     </div>
   );
 
   return (
     <div className="min-h-screen bg-[#0a0f18] text-slate-200 font-sans pb-24 lg:pb-0 selection:bg-blue-500/30">
-      <nav className="fixed bottom-0 left-0 right-0 z-[70] bg-[#0a0f18]/95 backdrop-blur-xl border-t border-slate-800 lg:top-0 lg:left-0 lg:w-20 lg:h-full lg:flex-col lg:border-r flex justify-around items-center p-4">
-        {[{ id: 'overview', icon: <LayoutDashboard /> }, { id: 'tasks', icon: <BookOpen /> }, { id: 'notes', icon: <StickyNote /> }, { id: 'calendar', icon: <CalendarIcon /> }].map(item => (
-          <button key={item.id} onClick={() => setActiveTab(item.id)} className={`p-4 rounded-2xl transition-all ${activeTab === item.id ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/30' : 'text-slate-500 hover:bg-slate-800'}`}>{item.icon}</button>
+      
+      {/* NAVIGATION - Mobile Bottom Bar / Desktop Left Sidebar */}
+      <nav className="fixed bottom-0 left-0 right-0 z-[70] bg-[#0a0f18]/95 backdrop-blur-xl border-t border-slate-800 lg:top-0 lg:left-0 lg:w-20 lg:h-full lg:flex-col lg:border-r flex justify-around items-center p-3 lg:p-4">
+        {[
+          { id: 'overview', icon: <LayoutDashboard size={24}/> },
+          { id: 'tasks', icon: <BookOpen size={24}/> },
+          { id: 'notes', icon: <StickyNote size={24}/> },
+          { id: 'calendar', icon: <CalendarIcon size={24}/> }
+        ].map(item => (
+          <button key={item.id} onClick={() => setActiveTab(item.id)} className={`p-4 rounded-2xl transition-all active:scale-90 ${activeTab === item.id ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/30' : 'text-slate-500 hover:bg-slate-800'}`}>
+            {item.icon}
+          </button>
         ))}
       </nav>
 
-      <main className="max-w-7xl mx-auto px-6 py-10 lg:pl-32">
-        <header className="mb-12 flex flex-col md:flex-row justify-between items-center gap-8">
-          <div><h1 className="text-4xl md:text-6xl font-black text-white italic uppercase tracking-tighter">COMMAND <span className="text-blue-500">PRO</span></h1><p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.3em] mt-3">Academic Readiness System 2026</p></div>
-          <div className="bg-[#0f172a] border border-slate-800 rounded-3xl p-4 flex items-center gap-6 shadow-2xl">
-            <div className="flex flex-col items-center min-w-[70px]"><span className="text-[8px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">Session</span><span className="text-2xl font-black text-white tabular-nums tracking-tighter">{Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}</span></div>
-            <button onClick={() => setIsActive(!isActive)} className={`p-3 rounded-2xl ${isActive ? 'bg-slate-800' : 'bg-blue-600 text-white'}`}>{isActive ? <X size={16}/> : <Zap size={16}/>}</button>
+      <main className="max-w-7xl mx-auto px-5 lg:px-6 py-8 lg:py-10 lg:pl-32">
+        <header className="mb-8 lg:mb-12 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="text-center md:text-left">
+            <h1 className="text-3xl lg:text-6xl font-black text-white italic uppercase tracking-tighter leading-none">COMMAND <span className="text-blue-500">PRO</span></h1>
+            <p className="text-slate-500 font-black uppercase text-[9px] lg:text-[10px] tracking-[0.3em] mt-3 italic">Academic Readiness System 2026</p>
+          </div>
+          <div className="bg-[#0f172a] border border-slate-800 rounded-3xl p-3 lg:p-4 flex items-center gap-4 lg:gap-6 shadow-2xl">
+            <div className="flex flex-col items-center min-w-[60px] lg:min-w-[70px]">
+              <span className="text-[7px] lg:text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 italic">Session</span>
+              <span className="text-xl lg:text-2xl font-black text-white tabular-nums tracking-tighter italic">{Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}</span>
+            </div>
+            <button onClick={() => setIsActive(!isActive)} className={`p-3 rounded-2xl transition-all ${isActive ? 'bg-slate-800' : 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'}`}>
+              {isActive ? <X size={16}/> : <Zap size={16}/>}
+            </button>
           </div>
         </header>
 
         {/* --- OVERVIEW TAB --- */}
         {activeTab === 'overview' && (
-          <div className="animate-in fade-in duration-700 space-y-12 pb-20">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-              {[ { l: 'Critical Priority', v: stats.critical, c: 'text-red-500', i: <Flame /> }, { l: 'Avg Readiness', v: stats.avgReady + '%', c: 'text-blue-500', i: <Gauge /> }, { l: 'Study Briefs', v: stats.noteCount, c: 'text-purple-500', i: <StickyNote /> }, { l: 'Goals Met', v: stats.taskDone, c: 'text-green-500', i: <CheckCircle2 /> }].map((s, i) => (
-                <div key={i} className="bg-[#0f172a] border border-slate-800 p-7 rounded-[32px] shadow-xl"><div className={`flex items-center gap-2 mb-3 text-[10px] font-black uppercase tracking-widest ${s.c}`}>{s.i} {s.l}</div><div className="text-5xl font-black text-white italic leading-none">{s.v}</div></div>
+          <div className="animate-in fade-in duration-700 space-y-8 lg:space-y-12 pb-10">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+              {[ 
+                { l: 'Critical', v: stats.critical, c: 'text-red-500', i: <Flame size={14}/> }, 
+                { l: 'Avg Ready', v: stats.avgReady + '%', c: 'text-blue-500', i: <Gauge size={14}/> }, 
+                { l: 'Briefs', v: stats.noteCount, c: 'text-purple-500', i: <StickyNote size={14}/> }, 
+                { l: 'Goals', v: stats.taskDone, c: 'text-green-500', i: <CheckCircle2 size={14}/> }
+              ].map((s, i) => (
+                <div key={i} className="bg-[#0f172a] border border-slate-800 p-5 lg:p-7 rounded-[28px] lg:rounded-[32px] shadow-xl">
+                  <div className={`flex items-center gap-2 mb-2 lg:mb-3 text-[8px] lg:text-[10px] font-black uppercase tracking-widest ${s.c}`}>{s.i} {s.l}</div>
+                  <div className="text-2xl lg:text-5xl font-black text-white italic leading-none">{s.v}</div>
+                </div>
               ))}
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-              <section className="space-y-6">
-                <h2 className="text-xl font-black text-white uppercase italic tracking-tighter ml-2">Academic Roadmap</h2>
-                <div className="space-y-4">
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
+              <section className="space-y-5">
+                <h2 className="text-lg lg:text-xl font-black text-white uppercase italic tracking-tighter ml-2">Academic Roadmap</h2>
+                <div className="space-y-3 lg:space-y-4">
                   {EXAM_DATA.map(exam => (
-                    <button key={exam.id} onClick={() => setSelectedExam(exam)} className={`w-full text-left bg-[#0f172a] border p-6 rounded-[36px] transition-all group flex items-center gap-6 ${exam.status.includes('CRITICAL') ? 'border-red-500/30' : 'border-slate-800'} hover:border-blue-500 shadow-xl`}>
-                       <div className={`w-14 h-14 rounded-2xl ${exam.color} flex flex-col items-center justify-center text-white shrink-0 shadow-lg`}><span className="text-[8px] font-black uppercase">MAY</span><span className="text-2xl font-black leading-none mt-1 italic">{exam.date.split('-')[2]}</span></div>
-                       <div className="flex-1 min-w-0"><h4 className="text-white font-black group-hover:text-blue-400 transition-colors truncate text-xl leading-tight italic">{exam.subject}</h4><div className="flex items-center gap-3 mt-2"><span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-lg ${exam.color} text-white`}>{exam.status}</span><div className="h-1 flex-1 max-w-[80px] bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-blue-500" style={{width: `${confidence[exam.id]||0}%`}}></div></div></div></div>
-                       <ChevronRight className="w-5 h-5 text-slate-700" />
+                    <button key={exam.id} onClick={() => setSelectedExam(exam)} className={`w-full text-left bg-[#0f172a] border p-4 lg:p-6 rounded-[28px] lg:rounded-[36px] transition-all group flex items-center gap-4 lg:gap-6 ${exam.status.includes('CRITICAL') ? 'border-red-500/30' : 'border-slate-800'} hover:border-blue-500 shadow-xl active:scale-[0.98]`}>
+                       <div className={`w-12 h-12 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl ${exam.color} flex flex-col items-center justify-center text-white shrink-0 shadow-lg`}>
+                          <span className="text-[7px] lg:text-[8px] font-black uppercase">MAY</span>
+                          <span className="text-lg lg:text-2xl font-black leading-none italic">{exam.date.split('-')[2]}</span>
+                       </div>
+                       <div className="flex-1 min-w-0">
+                          <h4 className="text-white font-black lg:group-hover:text-blue-400 transition-colors truncate text-sm lg:text-xl leading-tight italic uppercase tracking-tighter">{exam.subject}</h4>
+                          <div className="flex items-center gap-2 lg:gap-3 mt-1 lg:mt-2">
+                             <div className="h-1 flex-1 max-w-[100px] bg-slate-800 rounded-full overflow-hidden">
+                                <div className="h-full bg-blue-500 transition-all duration-1000" style={{width: `${confidence[exam.id]||0}%`}}></div>
+                             </div>
+                             <span className="text-[8px] lg:text-[9px] font-black text-slate-500 uppercase tracking-tighter">{confidence[exam.id] || 0}% READY</span>
+                          </div>
+                       </div>
+                       <ChevronRight className="w-4 h-4 text-slate-700" />
                     </button>
                   ))}
                 </div>
               </section>
-              <section className="bg-slate-900 border border-slate-800 rounded-[50px] p-10 flex flex-col items-center justify-center text-center space-y-7 shadow-2xl group"><div className="w-24 h-24 bg-red-500/10 rounded-[40%] flex items-center justify-center border border-red-500/20 group-hover:scale-110 transition-transform duration-500 shadow-xl"><ShieldCheck className="w-12 h-12 text-blue-500" /></div><div><h3 className="text-3xl font-black text-white italic uppercase tracking-tighter leading-tight">Secure Ecosystem</h3><p className="text-slate-500 text-xs mt-4 italic">Verification complete. Intelligence data is mirrored.</p></div></section>
+              <section className="bg-slate-900 border border-slate-800 rounded-[40px] lg:rounded-[50px] p-8 lg:p-10 flex flex-col items-center justify-center text-center space-y-6 shadow-2xl relative overflow-hidden">
+                 <ShieldCheck className="w-12 h-12 text-blue-500 mb-2" />
+                 <h3 className="text-xl lg:text-3xl font-black text-white italic uppercase tracking-tighter">Secure Ecosystem</h3>
+                 <p className="text-slate-500 text-xs tracking-wide leading-relaxed italic">Intelligence data confirmed. Mirroring active on all devices.</p>
+                 <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none"><Presentation className="w-32 h-32" /></div>
+              </section>
             </div>
           </div>
         )}
 
         {/* --- TASKS TAB --- */}
         {activeTab === 'tasks' && (
-          <div className="animate-in slide-in-from-right duration-500 space-y-12 pb-20 max-w-4xl mx-auto">
-             <div className="bg-[#0f172a] border border-slate-800 p-10 rounded-[50px] shadow-2xl space-y-12">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                   <div className="space-y-4"><label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-3 italic">Subject</label><select value={selectedSubjectId} onChange={(e) => setSelectedSubjectId(e.target.value)} className="w-full bg-slate-900 border border-slate-800 text-white rounded-3xl p-5 font-black outline-none appearance-none italic">{EXAM_DATA.map(e => <option key={e.id} value={e.id}>{e.subject}</option>)}</select></div>
-                   <div className="space-y-4"><label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-3 italic">Objective</label><div className="flex gap-3"><input type="text" value={newTaskText} onChange={(e) => setNewTaskText(e.target.value)} placeholder="Define goal..." className="flex-1 bg-slate-900 border border-slate-800 text-white rounded-3xl p-5 font-bold outline-none italic" /><button onClick={() => { if(newTaskText) { const up = [{id: Date.now(), subjectId: selectedSubjectId, text: newTaskText, completed: false}, ...tasks]; setTasks(up); sync('tasks', up); setNewTaskText(''); } }} className="bg-blue-600 text-white p-6 rounded-3xl hover:bg-blue-500 transition-all"><Plus /></button></div></div>
-                </div>
-                <div className="pt-10 border-t border-slate-800/50 space-y-6">
-                   <h3 className="text-sm font-black text-blue-500 uppercase px-2 italic tracking-widest">Assets</h3>
-                   <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                      <input type="text" value={newResTitle} onChange={(e) => setNewResTitle(e.target.value)} placeholder="Title..." className="bg-slate-900 border border-slate-800 text-white rounded-2xl p-4 text-xs font-bold outline-none italic" />
-                      <input type="text" value={newResUrl} onChange={(e) => setNewResUrl(e.target.value)} placeholder="URL..." className="bg-slate-900 border border-slate-800 text-white rounded-2xl p-4 text-xs font-bold outline-none shadow-md" />
-                      <button onClick={() => { if(newResTitle && newResUrl) { const up = [{id: Date.now(), subjectId: selectedSubjectId, title: newResTitle, url: newResUrl}, ...resources]; setResources(up); sync('resources', up); setNewResTitle(''); setNewResUrl(''); } }} className="bg-green-600 text-white font-black p-4 rounded-2xl shadow-lg text-[10px] uppercase">Link Asset</button>
+          <div className="animate-in slide-in-from-right duration-500 space-y-6 lg:space-y-12 pb-10 max-w-4xl mx-auto">
+             <div className="bg-[#0f172a] border border-slate-800 p-6 lg:p-10 rounded-[32px] lg:rounded-[50px] shadow-2xl space-y-8 lg:space-y-12">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
+                   <div className="space-y-3">
+                     <label className="text-[9px] lg:text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2 italic">Target Context</label>
+                     <select value={selectedSubjectId} onChange={(e) => setSelectedSubjectId(e.target.value)} className="w-full bg-slate-900 border border-slate-800 text-white rounded-2xl lg:rounded-3xl p-4 lg:p-5 font-black outline-none appearance-none italic shadow-xl">
+                        {EXAM_DATA.map(e => <option key={e.id} value={e.id}>{e.subject}</option>)}
+                     </select>
+                   </div>
+                   <div className="space-y-3">
+                     <label className="text-[9px] lg:text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2 italic">Define Objective</label>
+                     <div className="flex gap-2">
+                        <input type="text" value={newTaskText} onChange={(e) => setNewTaskText(e.target.value)} placeholder="Actionable goal..." className="flex-1 bg-slate-900 border border-slate-800 text-white rounded-2xl lg:rounded-3xl p-4 lg:p-5 font-bold outline-none italic shadow-md" />
+                        <button onClick={() => { if(newTaskText) { const up = [{id: Date.now(), subjectId: selectedSubjectId, text: newTaskText, completed: false}, ...tasks]; setTasks(up); sync('tasks', up); setNewTaskText(''); } }} className="bg-blue-600 text-white p-4 lg:p-5 rounded-2xl lg:rounded-3xl shadow-xl active:scale-90 transition-all"><Plus size={20}/></button>
+                     </div>
                    </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                    {EXAM_DATA.map(subj => {
                      const sTasks = tasks.filter(t => t.subjectId === subj.id);
                      if (sTasks.length === 0) return null;
                      return (
-                       <div key={subj.id} className="p-7 bg-slate-900/40 border border-slate-800 rounded-[40px] space-y-6 shadow-xl transition-all hover:border-slate-700">
-                          <div className="flex items-center gap-3"><div className={`w-2 h-7 rounded-full ${subj.color}`} /><h3 className="font-black text-white uppercase text-[11px] tracking-widest italic leading-none">{subj.subject}</h3></div>
-                          <div className="space-y-3">{sTasks.map(t => (<div key={t.id} className="flex items-center gap-4 bg-slate-800/20 p-5 rounded-3xl border border-slate-800 group hover:border-blue-500/30 transition-all shadow-sm"><button onClick={() => { const up = tasks.map(x => x.id === t.id ? {...x, completed: !x.completed} : x); setTasks(up); sync('tasks', up); }} className={`w-8 h-8 rounded-xl border-2 flex items-center justify-center transition-all ${t.completed ? 'bg-green-500 border-green-500' : 'border-slate-700 hover:border-blue-500'}`}>{t.completed && <CheckCircle2 size={16} className="text-white"/>}</button><span className={`text-sm font-bold flex-1 italic ${t.completed ? 'line-through text-slate-600' : 'text-slate-300'}`}>{t.text}</span><button onClick={() => { const up = tasks.filter(x => x.id !== t.id); setTasks(up); sync('tasks', up); }} className="opacity-0 group-hover:opacity-100 p-2 text-slate-600 hover:text-red-500 transition-all"><Trash2 size={16} /></button></div>))}</div></div>
+                       <div key={subj.id} className="p-5 lg:p-7 bg-slate-900/40 border border-slate-800 rounded-[28px] lg:rounded-[40px] space-y-4 shadow-xl">
+                          <div className="flex items-center gap-3"><div className={`w-1.5 h-6 rounded-full ${subj.color}`} /><h3 className="font-black text-white uppercase text-[10px] lg:text-[11px] tracking-widest italic">{subj.subject}</h3></div>
+                          <div className="space-y-2 lg:space-y-3">
+                            {sTasks.map(t => (
+                              <div key={t.id} className="flex items-center gap-3 bg-slate-800/20 p-4 rounded-2xl border border-slate-800">
+                                <button onClick={() => { const up = tasks.map(x => x.id === t.id ? {...x, completed: !x.completed} : x); setTasks(up); sync('tasks', up); }} className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${t.completed ? 'bg-green-500 border-green-500' : 'border-slate-700'}`}>{t.completed && <CheckCircle2 size={12} className="text-white"/>}</button>
+                                <span className={`text-xs font-bold flex-1 italic ${t.completed ? 'line-through text-slate-600' : 'text-slate-300'}`}>{t.text}</span>
+                                <button onClick={() => { const up = tasks.filter(x => x.id !== t.id); setTasks(up); sync('tasks', up); }} className="p-2 text-slate-600 hover:text-red-500"><Trash2 size={14} /></button>
+                              </div>
+                            ))}
+                          </div>
+                       </div>
                      );
                    })}
                 </div>
@@ -275,18 +334,36 @@ const App = () => {
 
         {/* --- NOTES TAB --- */}
         {activeTab === 'notes' && (
-          <div className="animate-in slide-in-from-right duration-500 h-[calc(100vh-250px)] pb-20">
+          <div className="animate-in slide-in-from-right h-full pb-20">
             {activeNoteId ? (
               <NoteEditor note={notes.find(n => n.id === activeNoteId)} onSave={(u) => { const n = notes.map(x => x.id === u.id ? u : x); setNotes(n); sync('notes', n); setActiveNoteId(null); }} onCancel={() => setActiveNoteId(null)} onDelete={(id) => { const n = notes.filter(x => x.id !== id); setNotes(n); sync('notes', n); setActiveNoteId(null); }} />
             ) : (
-              <div className="flex flex-col md:flex-row gap-8 h-full">
-                <div className="w-full md:w-[320px] bg-[#0f172a] border border-slate-800 rounded-[40px] p-8 shadow-2xl h-fit">
-                  <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-10 px-2 italic">Intelligence</h3>
-                  <div className="space-y-2">{EXAM_DATA.map(subj => (<button key={subj.id} onClick={() => { const newNote = { id: Date.now(), subjectId: subj.id, title: 'New Brief', content: '' }; const up = [newNote, ...notes]; setNotes(up); sync('notes', up); setActiveNoteId(newNote.id); }} className="w-full text-left p-4 rounded-2xl hover:bg-slate-800 transition-all flex items-center justify-between group"><div className="flex items-center gap-3 truncate min-w-0"><div className={`w-2 h-2 rounded-full ${subj.color}`} /><span className="text-xs font-black text-slate-400 group-hover:text-white truncate uppercase tracking-tighter leading-none italic">{subj.subject}</span></div><Plus size={14} className="text-slate-700 group-hover:text-blue-500 transition-all"/></button>))}</div>
+              <div className="flex flex-col lg:flex-row gap-6 h-full">
+                <div className="w-full lg:w-[280px] bg-[#0f172a] border border-slate-800 rounded-[32px] p-6 shadow-2xl h-fit overflow-x-auto">
+                  <div className="flex lg:flex-col gap-2">
+                    {EXAM_DATA.map(subj => (
+                      <button key={subj.id} onClick={() => { const n = { id: Date.now(), subjectId: subj.id, title: 'New Brief', content: '' }; const up = [n, ...notes]; setNotes(up); sync('notes', up); setActiveNoteId(n.id); }} className="whitespace-nowrap lg:w-full text-left p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center gap-3 active:scale-95">
+                        <div className={`w-2 h-2 rounded-full ${subj.color}`} />
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">{subj.id}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex-1 space-y-10 overflow-y-auto pr-2 custom-scrollbar pb-32">
-                   <div className="flex flex-col md:flex-row justify-between items-center bg-[#0a0f18]/90 backdrop-blur sticky top-0 py-4 border-b border-slate-800 z-20 gap-4"><h2 className="text-3xl font-black text-white italic uppercase tracking-tighter leading-none">BRIEFING <span className="text-blue-500">LAB</span></h2><button onClick={() => { const n = { id: Date.now(), subjectId: 'macro', title: 'New Note', content: '' }; const up = [n, ...notes]; setNotes(up); sync('notes', up); setActiveNoteId(n.id); }} className="bg-blue-600 text-white px-10 py-4 rounded-3xl text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-blue-600/30">+ New Entry</button></div>
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">{notes.map(note => (<button key={note.id} onClick={() => setActiveNoteId(note.id)} className="bg-[#0f172a] border border-slate-800 p-8 rounded-[40px] hover:border-blue-500 transition-all text-left shadow-xl h-fit group relative overflow-hidden"><div className="flex items-center gap-3 mb-5"><div className={`w-2 h-8 rounded-full ${EXAM_DATA.find(e => e.id === note.subjectId)?.color}`} /><span className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic leading-none">{EXAM_DATA.find(e => e.id === note.subjectId)?.subject}</span></div><h4 className="text-white font-black text-2xl mb-4 italic group-hover:text-blue-400 transition-colors leading-tight uppercase tracking-tighter">{note.title || 'Untitled Brief'}</h4><div className="text-sm text-slate-500 line-clamp-4 leading-relaxed font-medium italic border-l-2 border-slate-800 pl-4">{note.content || 'Notes pending initialization...'}</div></button>))}</div>
+                <div className="flex-1 space-y-6 overflow-y-auto custom-scrollbar">
+                   <div className="flex justify-between items-center bg-[#0a0f18]/90 backdrop-blur sticky top-0 py-2 border-b border-slate-800 z-20">
+                      <h2 className="text-xl font-black text-white italic uppercase tracking-tighter leading-none">BRIEFING <span className="text-blue-500">LAB</span></h2>
+                      <button onClick={() => { const n = { id: Date.now(), subjectId: 'macro', title: 'New Note', content: '' }; const up = [n, ...notes]; setNotes(up); sync('notes', up); setActiveNoteId(n.id); }} className="bg-blue-600 text-white px-5 py-3 rounded-2xl text-[9px] font-black uppercase shadow-xl active:scale-90">+ Entry</button>
+                   </div>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+                      {notes.map(note => (
+                        <button key={note.id} onClick={() => setActiveNoteId(note.id)} className="bg-[#0f172a] border border-slate-800 p-6 rounded-[28px] text-left shadow-xl h-fit active:scale-[0.98] transition-all">
+                           <div className="flex items-center gap-2 mb-3"><div className={`w-1.5 h-6 rounded-full ${EXAM_DATA.find(e => e.id === note.subjectId)?.color}`} /><span className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">{EXAM_DATA.find(e => e.id === note.subjectId)?.subject}</span></div>
+                           <h4 className="text-white font-black text-lg mb-2 italic group-hover:text-blue-400 leading-tight uppercase">{note.title || 'Untitled'}</h4>
+                           <div className="text-[11px] text-slate-500 line-clamp-3 leading-relaxed italic border-l-2 border-slate-800 pl-3">{note.content || 'Pending initialization...'}</div>
+                        </button>
+                      ))}
+                      {notes.length === 0 && <div className="col-span-full py-20 text-center opacity-10 flex flex-col items-center"><FileText size={60} className="mb-4"/><p className="text-[10px] font-black uppercase tracking-widest italic">Vault Offline</p></div>}
+                   </div>
                 </div>
               </div>
             )}
@@ -295,20 +372,43 @@ const App = () => {
 
         {/* --- CALENDAR TAB --- */}
         {activeTab === 'calendar' && (
-          <div className="animate-in zoom-in-95 duration-700 space-y-12 pb-20">
-            <div className="flex flex-col lg:flex-row gap-10">
-              <div className="flex-1 bg-[#0f172a] border border-slate-800 rounded-[50px] p-10 shadow-2xl">
-                <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter mb-12">Planner <span className="text-blue-500">2026</span></h2>
-                <div className="grid grid-cols-7 gap-5">
-                  {['M','T','W','T','F','S','S'].map((d, i) => <div key={i} className="text-center text-[10px] font-black text-slate-700 uppercase tracking-widest leading-none mb-8">{d}</div>)}
+          <div className="animate-in zoom-in-95 duration-700 space-y-8 pb-10">
+            <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
+              <div className="flex-1 bg-[#0f172a] border border-slate-800 rounded-[32px] lg:rounded-[50px] p-6 lg:p-10 shadow-2xl">
+                <h2 className="text-xl lg:text-3xl font-black text-white italic uppercase tracking-tighter mb-8 lg:mb-12">Planner <span className="text-blue-500">2026</span></h2>
+                <div className="grid grid-cols-7 gap-2 lg:gap-5">
+                  {['M','T','W','T','F','S','S'].map((d, i) => <div key={i} className="text-center text-[8px] lg:text-[10px] font-black text-slate-700 uppercase mb-4">{d}</div>)}
                   {Array.from({length: 14}, (_, i) => 18 + i).map(day => {
                     const exams = EXAM_DATA.filter(e => e.date?.includes(`-05-${day}`));
                     const isSelected = selectedDate === day;
-                    return (<button key={`day-${day}`} onClick={() => setSelectedDate(day)} className={`relative aspect-square rounded-[38%] flex flex-col items-center justify-center transition-all border-2 ${isSelected ? 'bg-blue-600 border-blue-400 shadow-2xl scale-105 z-10' : 'bg-[#0a0f18] border-transparent hover:border-slate-800 shadow-sm'}`}><span className={`text-2xl font-black ${isSelected ? 'text-white' : 'text-slate-600'}`}>{day}</span>{exams.length > 0 && <div className="absolute bottom-4 flex gap-1.5">{exams.map(e => <div key={e.id} className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : e.color}`}></div>)}</div>}</button>);
+                    return (
+                      <button key={`day-${day}`} onClick={() => setSelectedDate(day)} className={`relative aspect-square rounded-[30%] lg:rounded-[38%] flex flex-col items-center justify-center transition-all border-2 active:scale-90 ${isSelected ? 'bg-blue-600 border-blue-400 shadow-2xl scale-105 z-10' : 'bg-[#0a0f18] border-transparent hover:border-slate-800 shadow-sm'}`}>
+                        <span className={`text-base lg:text-2xl font-black ${isSelected ? 'text-white' : 'text-slate-600'}`}>{day}</span>
+                        {exams.length > 0 && <div className="absolute bottom-2 lg:bottom-4 flex gap-1">{exams.map(e => <div key={e.id} className={`w-1 h-1 lg:w-1.5 lg:h-1.5 rounded-full ${isSelected ? 'bg-white' : e.color}`}></div>)}</div>}
+                      </button>
+                    );
                   })}
                 </div>
               </div>
-              <div className="w-full lg:w-[400px] bg-[#0f172a] border border-slate-800 rounded-[50px] p-10 h-fit shadow-2xl space-y-10"><div className="flex items-center gap-7"><div className="w-24 h-24 bg-blue-600 rounded-[35%] flex flex-col items-center justify-center shadow-2xl shadow-blue-600/30 shrink-0"><span className="text-[10px] font-black text-white/50 uppercase leading-none mb-1 italic">MAY</span><span className="text-5xl font-black text-white leading-none tracking-tighter italic tabular-nums">{selectedDate}</span></div><h3 className="text-2xl font-black text-white tracking-tighter italic leading-none uppercase">Agenda</h3></div><div className="space-y-6">{EXAM_DATA.filter(e => e.date?.includes(`-05-${selectedDate}`)).map(exam => (<div key={exam.id} className={`p-7 rounded-[40px] border transition-all ${exam.status.includes('CRITICAL') ? 'bg-red-500/5 border-red-500/20 shadow-lg' : 'bg-[#0a0f18] border-slate-800 shadow-sm'} group hover:border-blue-500 shadow-xl`}><div className="flex justify-between items-start mb-6"><span className={`px-5 py-1.5 rounded-full text-[9px] font-black uppercase ${exam.color} text-white shadow-xl`}>{exam.status}</span><Clock size={16} className="text-slate-700 transition-colors group-hover:text-blue-400"/></div><h4 className="text-white font-black text-2xl italic mb-2 tracking-tight leading-tight uppercase tracking-tighter">{exam.subject}</h4><p className="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-6 leading-none italic">{exam.time}</p><button onClick={() => setSelectedExam(exam)} className="w-full bg-slate-800 py-4 rounded-2xl text-[9px] font-black uppercase tracking-widest text-slate-300 hover:text-white hover:bg-blue-600 transition-all shadow-md active:scale-95">Details</button></div>))}{EXAM_DATA.filter(e => e.date?.includes(`-05-${selectedDate}`)).length === 0 && <div className="text-center opacity-10 py-24 flex flex-col items-center"><Coffee size={50} className="mb-4"/><p className="text-[10px] font-black uppercase tracking-[0.4em] leading-none italic">Self-Study Window</p></div>}</div></div>
+              <div className="w-full lg:w-[400px] bg-[#0f172a] border border-slate-800 rounded-[32px] lg:rounded-[50px] p-6 lg:p-10 h-fit shadow-2xl space-y-8">
+                <div className="flex items-center gap-5">
+                  <div className="w-16 h-16 bg-blue-600 rounded-[30%] flex flex-col items-center justify-center shadow-2xl shrink-0 italic">
+                    <span className="text-[8px] font-black text-white/50 uppercase leading-none italic">MAY</span>
+                    <span className="text-3xl font-black text-white leading-none tracking-tighter italic">{selectedDate}</span>
+                  </div>
+                  <h3 className="text-xl font-black text-white tracking-tighter italic leading-none uppercase">Agenda</h3>
+                </div>
+                <div className="space-y-4">
+                  {EXAM_DATA.filter(e => e.date?.includes(`-05-${selectedDate}`)).map(exam => (
+                    <div key={exam.id} className="p-5 rounded-[28px] border bg-[#0a0f18] border-slate-800 shadow-sm space-y-4">
+                      <span className={`px-4 py-1 rounded-full text-[8px] font-black uppercase ${exam.color} text-white`}>{exam.status}</span>
+                      <h4 className="text-white font-black text-lg italic leading-tight uppercase tracking-tighter">{exam.subject}</h4>
+                      <button onClick={() => setSelectedExam(exam)} className="w-full bg-slate-800 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-300 active:scale-95 transition-all">Details</button>
+                    </div>
+                  ))}
+                  {EXAM_DATA.filter(e => e.date?.includes(`-05-${selectedDate}`)).length === 0 && <div className="text-center opacity-10 py-10 flex flex-col items-center"><Coffee size={40} className="mb-3"/><p className="text-[9px] font-black uppercase tracking-widest italic leading-none">Study Window</p></div>}
+                </div>
+              </div>
             </div>
           </div>
         )}
