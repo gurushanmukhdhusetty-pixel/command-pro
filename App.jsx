@@ -57,6 +57,7 @@ const EXAM_DATA = [
   }
 ];
 
+// --- SUB-COMPONENTS ---
 const formatMarkdown = (text) => {
   if (!text) return null;
   return text.split('\n').map((line, i) => {
@@ -68,37 +69,31 @@ const formatMarkdown = (text) => {
   });
 };
 
-// --- SUB-COMPONENTS ---
 const NoteEditor = ({ note, onSave, onCancel, onDelete }) => {
   const [localNote, setLocalNote] = useState(note);
   const [viewMode, setViewMode] = useState('edit');
   useEffect(() => { setLocalNote(note); }, [note.id]);
-  const handleFieldChange = (field, val) => setLocalNote(prev => ({ ...prev, [field]: val }));
-
   return (
     <div className="flex flex-col h-full bg-[#0f172a] border border-slate-800 rounded-[32px] overflow-hidden shadow-2xl animate-in slide-in-from-right duration-300">
-      <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50 shrink-0">
+      <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
         <div className="flex gap-2">
-          <button onClick={() => setViewMode('edit')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${viewMode === 'edit' ? 'bg-blue-600 text-white' : 'text-slate-500 hover:bg-slate-800'}`}>Edit</button>
-          <button onClick={() => setViewMode('preview')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${viewMode === 'preview' ? 'bg-blue-600 text-white' : 'text-slate-500 hover:bg-slate-800'}`}>Preview</button>
+          <button onClick={() => setViewMode('edit')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase ${viewMode === 'edit' ? 'bg-blue-600 text-white' : 'text-slate-500 hover:bg-slate-800'}`}>Edit</button>
+          <button onClick={() => setViewMode('preview')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase ${viewMode === 'preview' ? 'bg-blue-600 text-white' : 'text-slate-500 hover:bg-slate-800'}`}>Preview</button>
         </div>
         <div className="flex gap-2">
           <button onClick={() => onSave(localNote)} className="bg-green-600 text-white p-2 rounded-xl"><Save size={16} /></button>
-          <button onClick={() => onDelete(localNote.id)} className="bg-red-600/10 text-red-500 p-2 rounded-xl"><Trash2 size={16} /></button>
+          <button onClick={() => onDelete(localNote.id)} className="bg-red-600/10 text-red-500 p-2 rounded-xl hover:bg-red-600"><Trash2 size={16} /></button>
           <button onClick={onCancel} className="text-slate-500 p-2"><X size={16} /></button>
         </div>
       </div>
       <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
         {viewMode === 'edit' ? (
           <div className="space-y-6">
-            <input value={localNote.title || ''} onChange={(e) => handleFieldChange('title', e.target.value)} placeholder="Note Title..." className="w-full bg-transparent text-3xl font-black text-white outline-none italic placeholder:text-slate-800" />
-            <textarea value={localNote.content || ''} onChange={(e) => handleFieldChange('content', e.target.value)} className="w-full h-[500px] bg-transparent text-slate-300 text-sm outline-none resize-none" placeholder="Start writing..." />
+            <input value={localNote.title || ''} onChange={(e) => setLocalNote({...localNote, title: e.target.value})} placeholder="Title..." className="w-full bg-transparent text-3xl font-black text-white outline-none italic" />
+            <textarea value={localNote.content || ''} onChange={(e) => setLocalNote({...localNote, content: e.target.value})} className="w-full h-[500px] bg-transparent text-slate-300 text-sm outline-none resize-none" placeholder="Start writing..." />
           </div>
         ) : (
-          <div className="animate-in fade-in duration-300">
-            <h1 className="text-4xl font-black text-white mb-2 italic uppercase tracking-tighter">{localNote.title || 'Untitled'}</h1>
-            <div className="prose prose-invert">{formatMarkdown(localNote.content)}</div>
-          </div>
+          <div className="prose prose-invert">{formatMarkdown(localNote.content)}</div>
         )}
       </div>
     </div>
@@ -113,24 +108,24 @@ const SubjectModal = ({ exam, onClose, resources, notes, confidence, onConfidenc
       <div className="bg-[#0f172a] border border-slate-800 w-full max-w-4xl rounded-[40px] overflow-hidden max-h-[90vh] flex flex-col shadow-2xl">
         <div className={`p-8 ${exam.color} flex justify-between items-start shrink-0`}>
           <div>
-            <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter leading-none">{exam.subject}</h3>
+            <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter">{exam.subject}</h3>
             <span className="bg-white/20 px-3 py-1 rounded-full text-[10px] font-black text-white uppercase mt-4 inline-block tracking-widest">{exam.status}</span>
           </div>
           <button onClick={onClose} className="bg-white/20 p-2 rounded-full hover:bg-white/30 transition-all"><X size={20} /></button>
         </div>
         <div className="flex-1 overflow-y-auto p-8 grid grid-cols-1 md:grid-cols-2 gap-10 custom-scrollbar bg-[#0a0f18]/30">
           <div className="space-y-8">
-            <div className="bg-slate-900/50 p-7 rounded-[32px] border border-slate-800 space-y-4 shadow-xl">
+            <div className="bg-slate-900/50 p-7 rounded-[32px] border border-slate-800 space-y-4">
               <div className="flex justify-between items-center">
-                 <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2"><Gauge size={14} className="text-blue-500" /> Readiness Meter</h4>
+                 <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 font-black italic"><Gauge size={14} className="text-blue-500" /> Readiness</h4>
                  <span className="text-xl font-black text-blue-500 italic">{confidence[exam.id] || 0}%</span>
               </div>
               <input type="range" min="0" max="100" value={confidence[exam.id] || 0} onChange={(e) => onConfidenceUpdate(exam.id, e.target.value)} className="w-full h-2 accent-blue-500 cursor-pointer bg-slate-800 rounded-lg appearance-none" />
             </div>
             <div className="bg-slate-900/50 p-7 rounded-[32px] border border-slate-800 space-y-6 shadow-xl">
               <div className="flex justify-between items-end">
-                <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 font-black italic">Intelligence</h4>
-                <div className="text-right"><span className="text-[8px] font-black text-slate-500 uppercase block mb-1">Internal Sum</span><span className="text-2xl font-black text-white italic leading-none">{exam.internal || 0} Marks</span></div>
+                <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 italic font-black">Intelligence</h4>
+                <div className="text-right"><span className="text-[8px] font-black text-slate-500 uppercase block mb-1">Internal sum</span><span className="text-2xl font-black text-white italic leading-none">{exam.internal || 0} Marks</span></div>
               </div>
               <div className="space-y-4">
                 {exam.breakdown?.map((b, i) => (
@@ -140,163 +135,10 @@ const SubjectModal = ({ exam, onClose, resources, notes, confidence, onConfidenc
                   </div>
                 ))}
                 <div className="pt-6 border-t border-slate-800 flex justify-between items-center">
-                   <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 font-black italic">Goal Threshold</span>
+                   <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 font-black italic">Goal threshold</span>
                    <span className={`text-2xl font-black italic ${exam.needed === 0 ? 'text-green-500' : 'text-red-500'}`}>{exam.needed} MARKS</span>
                 </div>
               </div>
             </div>
           </div>
-          <div className="space-y-6">
-            <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 italic px-2"><LinkIcon size={14} /> Material Assets</h4>
-            <div className="space-y-3">
-              {subRes.map(res => <a key={res.id} href={res.url} target="_blank" rel="noreferrer" className="flex items-center justify-between p-5 bg-slate-900 border border-slate-800 rounded-2xl hover:border-blue-500 transition-all shadow-lg group"><span className="text-xs font-bold text-white italic group-hover:text-blue-400">{res.title}</span><ExternalLink size={12} className="text-slate-500 group-hover:text-blue-500" /></a>)}
-            </div>
-            <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest pt-4 flex items-center gap-2 italic px-2"><StickyNote size={14} /> Subject Briefs</h4>
-            {subNotes.map(note => <div key={note.id} className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] shadow-lg"><h5 className="text-white font-black mb-2 italic">{note.title}</h5><p className="text-xs text-slate-500 italic line-clamp-3 leading-relaxed">{note.content}</p></div>)}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// --- MAIN APP ---
-const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [pass, setPass] = useState('');
-  const [activeTab, setActiveTab] = useState('overview');
-  const [selectedExam, setSelectedExam] = useState(null);
-  const [activeNoteId, setActiveNoteId] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(21);
-  const [selectedSubjectId, setSelectedSubjectId] = useState('macro');
-  const [newTaskText, setNewTaskText] = useState('');
-  const [newResTitle, setNewResTitle] = useState('');
-  const [newResUrl, setNewResUrl] = useState('');
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
-  const [isActive, setIsActive] = useState(false);
-
-  const [tasks, setTasks] = useState([]);
-  const [resources, setResources] = useState([]);
-  const [notes, setNotes] = useState([]);
-  const [confidence, setConfidence] = useState({});
-
-  useEffect(() => {
-    if (!isAuthenticated) return;
-    const fetchData = async () => {
-      const { data } = await supabase.from('command_pro_data').select('*');
-      if (data) {
-        data.forEach(row => {
-          if (row.id === 'tasks') setTasks(row.content || []);
-          if (row.id === 'notes') setNotes(row.content || []);
-          if (row.id === 'confidence') setConfidence(row.content || {});
-          if (row.id === 'resources') setResources(row.content || []);
-        });
-      }
-    };
-    fetchData();
-
-    const channel = supabase.channel('sync').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'command_pro_data' }, (payload) => {
-      const { id, content } = payload.new;
-      if (id === 'tasks') setTasks(content);
-      if (id === 'notes') setNotes(content);
-      if (id === 'confidence') setConfidence(content);
-      if (id === 'resources') setResources(content);
-    }).subscribe();
-
-    return () => { supabase.removeChannel(channel); };
-  }, [isAuthenticated]);
-
-  const sync = async (id, content) => {
-    await supabase.from('command_pro_data').upsert({ id, content });
-  };
-
-  useEffect(() => {
-    let interval;
-    if (isActive && timeLeft > 0) interval = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
-    return () => clearInterval(interval);
-  }, [isActive, timeLeft]);
-
-  const stats = useMemo(() => {
-    const academics = EXAM_DATA.filter(e => e.id !== 'general');
-    const avgReady = Math.round(academics.reduce((sum, e) => sum + (parseInt(confidence[e.id]) || 0), 0) / academics.length) || 0;
-    return { critical: EXAM_DATA.filter(d => d.status.includes('CRITICAL')).length, avgReady, noteCount: notes.length, taskDone: tasks.filter(t => t.completed).length };
-  }, [notes, tasks, confidence]);
-
-  const handleConf = (id, val) => {
-    const updated = { ...confidence, [id]: val };
-    setConfidence(updated);
-    sync('confidence', updated);
-  };
-
-  if (!isAuthenticated) return (
-    <div className="min-h-screen bg-[#0a0f18] flex items-center justify-center p-6">
-      <form onSubmit={(e) => { e.preventDefault(); if(pass === 'Foxtrot@116') setIsAuthenticated(true); }} className="bg-[#0f172a] border border-slate-800 p-10 rounded-[40px] w-full max-w-md shadow-2xl space-y-8 animate-in zoom-in duration-500">
-        <div className="flex flex-col items-center text-center space-y-4">
-          <div className="w-16 h-16 bg-blue-500/10 rounded-3xl flex items-center justify-center border border-blue-500/20 shadow-xl shadow-blue-500/5"><Lock className="text-blue-500 w-8 h-8" /></div>
-          <h1 className="text-2xl font-black text-white italic uppercase tracking-tighter">Command <span className="text-blue-500">Pro</span></h1>
-          <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest leading-none">Security Protocol Active</p>
-        </div>
-        <input type="password" value={pass} onChange={(e) => setPass(e.target.value)} placeholder="Access Key..." className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-5 text-white font-black text-center outline-none focus:ring-4 focus:ring-blue-500/10 transition-all" />
-        <button type="submit" className="w-full bg-blue-600 text-white p-5 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-blue-500 transition-all">Verify Intel</button>
-      </form>
-    </div>
-  );
-
-  return (
-    <div className="min-h-screen bg-[#0a0f18] text-slate-200 font-sans pb-24 lg:pb-0 selection:bg-blue-500/30">
-      <nav className="fixed bottom-0 left-0 right-0 z-[70] bg-[#0a0f18]/95 backdrop-blur-xl border-t border-slate-800 lg:top-0 lg:left-0 lg:w-20 lg:h-full lg:flex-col lg:border-r flex justify-around items-center p-4">
-        {[{ id: 'overview', icon: <LayoutDashboard /> }, { id: 'tasks', icon: <BookOpen /> }, { id: 'notes', icon: <StickyNote /> }, { id: 'calendar', icon: <CalendarIcon /> }].map(item => (
-          <button key={item.id} onClick={() => setActiveTab(item.id)} className={`p-4 rounded-2xl transition-all ${activeTab === item.id ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/30' : 'text-slate-500 hover:bg-slate-800'}`}>{item.icon}</button>
-        ))}
-      </nav>
-
-      <main className="max-w-7xl mx-auto px-6 py-10 lg:pl-32">
-        <header className="mb-12 flex flex-col md:flex-row justify-between items-center gap-8">
-          <div><h1 className="text-4xl md:text-6xl font-black text-white italic uppercase tracking-tighter leading-none">COMMAND <span className="text-blue-500">PRO</span></h1><p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.3em] mt-3">Academic Readiness System 2026</p></div>
-          <div className="bg-[#0f172a] border border-slate-800 rounded-3xl p-4 flex items-center gap-6 shadow-2xl">
-            <div className="flex flex-col items-center min-w-[70px]"><span className="text-[8px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">Session</span><span className="text-2xl font-black text-white tabular-nums tracking-tighter italic leading-none">{Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}</span></div>
-            <button onClick={() => setIsActive(!isActive)} className={`p-3 rounded-2xl ${isActive ? 'bg-slate-800' : 'bg-blue-600 text-white'}`}>{isActive ? <X size={16}/> : <Zap size={16}/>}</button>
-          </div>
-        </header>
-
-        {activeTab === 'overview' && (
-          <div className="animate-in fade-in duration-700 space-y-12 pb-20">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-              {[ { l: 'Critical Priority', v: stats.critical, c: 'text-red-500', i: <Flame /> }, { l: 'Avg Readiness', v: stats.avgReady + '%', c: 'text-blue-500', i: <Gauge /> }, { l: 'Study Briefs', v: stats.noteCount, c: 'text-purple-500', i: <StickyNote /> }, { l: 'Goals Met', v: stats.taskDone, c: 'text-green-500', i: <CheckCircle2 /> }].map((s, i) => (
-                <div key={i} className="bg-[#0f172a] border border-slate-800 p-7 rounded-[32px] shadow-xl"><div className={`flex items-center gap-2 mb-3 text-[10px] font-black uppercase tracking-widest ${s.c}`}>{s.i} {s.l}</div><div className="text-5xl font-black text-white italic leading-none">{s.v}</div></div>
-              ))}
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-              <section className="space-y-6">
-                <h2 className="text-xl font-black text-white uppercase italic tracking-tighter ml-2 italic">Academic Roadmap</h2>
-                <div className="space-y-4">
-                  {EXAM_DATA.map(exam => (
-                    <button key={exam.id} onClick={() => setSelectedExam(exam)} className={`w-full text-left bg-[#0f172a] border p-6 rounded-[36px] transition-all group flex items-center gap-6 ${exam.status.includes('CRITICAL') ? 'border-red-500/30' : 'border-slate-800'} hover:border-blue-500 shadow-xl`}>
-                       <div className={`w-14 h-14 rounded-2xl ${exam.color} flex flex-col items-center justify-center text-white shrink-0 shadow-lg`}>
-                          <span className="text-[8px] font-black uppercase leading-none">MAY</span>
-                          <span className="text-2xl font-black leading-none mt-1 italic leading-none">{exam.date.split('-')[2]}</span>
-                       </div>
-                       <div className="flex-1 min-w-0">
-                          <h4 className="text-white font-black group-hover:text-blue-400 transition-colors truncate text-xl leading-tight italic">{exam.subject}</h4>
-                          <div className="flex items-center gap-3 mt-2">
-                             <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-lg ${exam.color} text-white`}>{exam.status}</span>
-                             <div className="h-1 flex-1 max-w-[80px] bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-blue-500" style={{width: `${confidence[exam.id]||0}%`}}></div></div>
-                             <span className="text-[9px] font-black text-slate-500 uppercase">{confidence[exam.id] || 0}% READY</span>
-                          </div>
-                       </div>
-                       <ChevronRight className="w-5 h-5 text-slate-700 group-hover:translate-x-1" />
-                    </button>
-                  ))}
-                </div>
-              </section>
-              <section className="bg-slate-900 border border-slate-800 rounded-[50px] p-10 flex flex-col items-center justify-center text-center space-y-7 relative overflow-hidden shadow-2xl group"><div className="w-24 h-24 bg-red-500/10 rounded-[40%] flex items-center justify-center border border-red-500/20 group-hover:scale-110 transition-transform duration-500 shadow-xl"><ShieldCheck className="w-12 h-12 text-blue-500" /></div><div><h3 className="text-3xl font-black text-white italic uppercase tracking-tighter leading-tight">Secure Ecosystem Active</h3><p className="text-slate-500 text-xs mt-4 leading-relaxed font-medium italic">Intel confirmed. Database mirrored across 2026 ecosystem.</p></div><div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none"><Presentation className="w-40 h-40" /></div></section>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'tasks' && (
-          <div className="animate-in slide-in-from-right duration-500 space-y-12 pb-20">
-             <div className="bg-[#0f172a] border border-slate-800 p-10 rounded-[50px] shadow-2xl space-y-12">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                   <div className="space-y-4"><label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-3 italic">Subject</label><select value={selectedSubjectId} onChange={(e) => setSelectedSubjectId(e.target.value)} className="w-full bg-slate-900 border border-slate-800 text-white rounded-3xl p-5 font-black outline-none appearance-none italic">{EXAM_DATA.map(e => <option key={e.id} value={e.id}>{e.subject}</option>)}</select></div>
-                   <div className="space-y-4"><label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-3 italic">Objective</label><div className="flex gap-3"><input type="text" value={newTaskText} onChange={(e) => setNewTaskText(e.target.value)} placeholder="Actionable goal..." className
+          <div className="space-y
