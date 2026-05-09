@@ -32,20 +32,34 @@ const App = () => {
   const [confidence, setConfidence] = useState({});
 
   // Fetch from Cloud on Start
-  useEffect(() => {
-    const fetchCloud = async () => {
-      const { data } = await supabase.from('command_pro_data').select('*');
-      if (data) {
-        data.forEach(row => {
-          if (row.id === 'tasks') setTasks(row.content || []);
-          if (row.id === 'notes') setNotes(row.content || []);
-          if (row.id === 'confidence') setConfidence(row.content || {});
-        });
-      }
-    };
-    fetchCloud();
-  }, []);
+ useEffect(() => {
+  // 1. Initial Load
+  const fetchCloudData = async () => {
+    const { data } = await supabase.from('command_pro_data').select('*');
+    if (data) {
+      data.forEach(row => {
+        if (row.id === 'tasks') setTasks(row.content);
+        if (row.id === 'notes') setNotes(row.content);
+        if (row.id === 'confidence') setConfidence(row.content);
+      });
+    }
+  };
+  fetchCloudData();
 
+  // 2. REALTIME SYNC (The Magic Part)
+  const channel = supabase
+    .channel('cloud-sync')
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'command_pro_data' }, 
+    (payload) => {
+      const { id, content } = payload.new;
+      if (id === 'tasks') setTasks(content);
+      if (id === 'notes') setNotes(content);
+      if (id === 'confidence') setConfidence(content);
+    })
+    .subscribe();
+
+  return () => { supabase.removeChannel(channel); };
+}, []);
   // Sync to Cloud
   const sync = async (id, content) => {
     await supabase.from('command_pro_data').upsert({ id, content });
