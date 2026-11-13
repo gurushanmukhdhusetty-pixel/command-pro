@@ -33,9 +33,9 @@ export function Logo({ size = 40 }) {
           <stop offset="1" stopColor="#7d838c" />
         </linearGradient>
       </defs>
-      <path d="M32 3 L58 32 L32 61 L6 32 Z" fill="none" stroke="url(#lg-logo)" strokeWidth="2.2" />
-      <path d="M32 10 L51 32 L32 54 L13 32 Z" fill="none" stroke="#d4b06a" strokeWidth="1" opacity=".8" />
-      <text x="32" y="37.5" textAnchor="middle" fontFamily="Cinzel, serif" fontWeight="700" fontSize="14" fill="url(#lg-logo)">
+      <path d="M32 3 L58 32 L32 61 L6 32 Z" fill="none" stroke="#a8864f" strokeWidth="1.6" />
+      <path d="M32 10 L51 32 L32 54 L13 32 Z" fill="none" stroke="#a8864f" strokeWidth=".8" opacity=".6" />
+      <text x="32" y="37.5" textAnchor="middle" fontFamily="Cinzel, serif" fontWeight="700" fontSize="13" fill="currentColor">
         VCH
       </text>
     </svg>

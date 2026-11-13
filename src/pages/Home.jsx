@@ -88,9 +88,9 @@ export default function Home() {
   const { products } = useStore();
   const lines = Object.values(LINES);
   const byLine = (id) => products.filter((p) => p.line === id);
-  const heroOf = { bridal: 'nizami-kundan-choker', home: 'ashtalakshmi-kalash', casual: 'everyday-choker-jhumka-set' };
+  const heroOf = { bridal: 'lakshmi-temple-choker-set', home: 'ashtalakshmi-kalash', casual: 'everyday-choker-jhumka-set' };
   const best = products.filter((p) => p.badge === 'Bestseller' || p.rating >= 4.9).slice(0, 8);
-  const rot = ['kasulaperu-temple-haaram', 'charminar-oxidised-jhumkas', 'ashtalakshmi-kalash', 'royal-carved-kada', 'peacock-kumkum-bharani', 'solitaire-stack-ring', 'royal-pooja-thali-set', 'chandbali-maang-tikka', 'ghungroo-bridal-payal', 'akhand-silver-diya']
+  const rot = ['darpan-mirror-bridal-set', 'lakshmi-temple-choker-set', 'ghungroo-collar-jhumka-set', 'peacock-pendant-long-set', 'rajwadi-choker-tikka-cuff', 'black-bead-choker-earchain-set', 'noor-mirror-choker', 'mirror-hasli-jhumka-set']
     .map((id) => products.find((p) => p.id === id))
     .filter(Boolean);
   const demo = products.find((p) => p.id === 'charminar-oxidised-jhumkas');
@@ -109,7 +109,7 @@ export default function Home() {
           <div className="hero-copy">
             <div className="eyebrow fade-up">Old City · Hyderabad · Royal Silver</div>
             <h1 className="fade-up d1">
-              Silver fit for <span className="silver-text">a Nizam’s court</span>
+              Royal silver, <span className="silver-text">crafted for generations</span>
             </h1>
             <p className="lead fade-up d2">
               Bridal heirlooms, pure pooja silver and featherweight everyday pieces — handcrafted by Hyderabad karigars, BIS hallmarked, and priced
@@ -144,20 +144,9 @@ export default function Home() {
           </div>
           <div className="hero-3d">
             <div className="hero-ring" aria-hidden="true" />
-            {mobile ? (
-              <div className="hero-photo">
-                <ProductImage p={products.find((x) => x.id === 'mandala-oxidised-bridal-set')} eager sizes="100vw" />
-              </div>
-            ) : (
-              <Three
-                scene="hero"
-                fallback={
-                  <div className="hero-photo">
-                    <ProductImage p={products.find((x) => x.id === 'royal-carved-kada')} eager sizes="50vw" />
-                  </div>
-                }
-              />
-            )}
+            <div className="hero-photo">
+              <ProductImage p={products.find((x) => x.id === 'mandala-oxidised-bridal-set')} eager sizes="(max-width: 760px) 100vw, 50vw" />
+            </div>
           </div>
         </div>
         <div className="scroll-cue" aria-hidden="true">
@@ -198,9 +187,9 @@ export default function Home() {
       {/* ───────── 3D ROTUNDA ───────── */}
       <section className="section rotunda-section">
         <div className="container">
-          <SectionTitle eyebrow="The signature rotunda" title="Masterpieces in the round" sub={mobile ? 'Swipe through our signature pieces' : 'Hover to pause · click any piece to see it in 3D'} />
+          <SectionTitle eyebrow="The signature rotunda" title="Signature pieces" sub="Heirloom oxidised silver, handcrafted in Hyderabad" />
         </div>
-        {mobile ? (
+        {true ? (
           <div className="container">
             <div className="hscroll">
               {rot.map((p) => (
