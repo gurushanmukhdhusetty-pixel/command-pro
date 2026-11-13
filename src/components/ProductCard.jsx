@@ -61,7 +61,7 @@ export default function ProductCard({ p }) {
           </Link>
           <div className="pcard-foot">
             <div>
-              <div className="pcard-price">{rupee(price.total)}</div>
+              <div className="pcard-price flash" key={price.total}>{rupee(price.total)}</div>
               <div className="tiny muted">incl. GST · live rate</div>
             </div>
             <button className="btn btn-sm btn-ghost" onClick={() => addToCart(p.id, { size: p.sizes?.[1] || p.sizes?.[0] })}>

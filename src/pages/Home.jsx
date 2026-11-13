@@ -127,7 +127,7 @@ export default function Home() {
               <div>
                 <span className={`dot ${status}`} />
                 <small>Silver 999 · today</small>
-                <strong>{rupee2(rates.silver)}</strong>
+                <strong className="flash" key={rates.silver.toFixed(2)}>{rupee2(rates.silver)}</strong>
                 <em>per gram</em>
               </div>
               <div>

@@ -883,3 +883,6 @@ select.input option { background: #fff; }
   .marquee-track > div { gap: 10px 22px; }
   .marquee span { font-size: 0.6rem; letter-spacing: 0.16em; }
 }
+/* price changed → brief highlight */
+.flash { animation: priceflash 1.6s ease-out; border-radius: 2px; }
+@keyframes priceflash { 0% { background: rgba(168, 134, 79, 0.28); } 100% { background: transparent; } }

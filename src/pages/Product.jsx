@@ -137,7 +137,7 @@ export default function Product() {
               </div>
             )}
             <div className="pd-price">
-              <strong>{rupee(price.total * qty)}</strong>
+              <strong className="flash" key={price.total}>{rupee(price.total * qty)}</strong>
               <span className={`live-chip ${status}`}>
                 <i /> {status === 'live' ? 'Live price' : status === 'manual' ? 'Store rate' : 'Indicative'}
               </span>

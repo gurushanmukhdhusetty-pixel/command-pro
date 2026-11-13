@@ -5,6 +5,7 @@ import { load, save } from './storage';
 
 const RatesCtx = createContext(null);
 const POLL_MS = 60_000;
+const RETRY_MS = 15_000;
 
 async function fetchJSON(url, ms = 8000) {
   const ctrl = new AbortController();
@@ -18,19 +19,31 @@ async function fetchJSON(url, ms = 8000) {
   }
 }
 
-async function fetchSpot() {
-  const [xag, xau] = await Promise.all([
-    fetchJSON('https://api.gold-api.com/price/XAG'),
-    fetchJSON('https://api.gold-api.com/price/XAU'),
-  ]);
+async function fetchDirect() {
+  const [xag, xau] = await Promise.all([fetchJSON('https://api.gold-api.com/price/XAG'), fetchJSON('https://api.gold-api.com/price/XAU')]);
   let usdInr;
   try {
     usdInr = (await fetchJSON('https://open.er-api.com/v6/latest/USD')).rates.INR;
   } catch {
     usdInr = (await fetchJSON('https://api.frankfurter.app/latest?from=USD&to=INR')).rates.INR;
   }
-  if (!(xag?.price > 0 && xau?.price > 0 && usdInr > 0)) throw new Error('bad data');
-  return { xagUsd: xag.price, xauUsd: xau.price, usdInr };
+  return { xagUsd: +xag.price, xauUsd: +xau.price, usdInr: +usdInr };
+}
+
+const valid = (s) => s && s.xagUsd > 1 && s.xauUsd > 100 && s.usdInr > 30;
+
+// 1) our own server endpoint (/api/rates, no CORS issues) → 2) direct public APIs
+async function fetchSpot() {
+  try {
+    const d = await fetchJSON('/api/rates');
+    const s = { xagUsd: +d.xagUsd, xauUsd: +d.xauUsd, usdInr: +d.usdInr };
+    if (valid(s)) return s;
+  } catch {
+    /* fall through */
+  }
+  const s = await fetchDirect();
+  if (!valid(s)) throw new Error('bad data');
+  return s;
 }
 
 export function RatesProvider({ children }) {
@@ -58,15 +71,28 @@ export function RatesProvider({ children }) {
         save('vch.ticks', next);
         return next;
       });
+      return true;
     } catch {
       setStatus((st) => (st === 'live' ? 'live' : cached ? 'cached' : 'fallback'));
+      return false;
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    refresh();
-    const id = setInterval(refresh, POLL_MS);
-    return () => clearInterval(id);
+    let timer;
+    let alive = true;
+    const loop = async () => {
+      const ok = await refresh();
+      if (alive) timer = setTimeout(loop, ok ? POLL_MS : RETRY_MS);
+    };
+    loop();
+    const onVis = () => document.visibilityState === 'visible' && refresh();
+    document.addEventListener('visibilitychange', onVis);
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+      document.removeEventListener('visibilitychange', onVis);
+    };
   }, [refresh]);
 
   const setSettings = useCallback((patch) => {

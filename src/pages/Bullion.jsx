@@ -172,7 +172,7 @@ export default function Bullion() {
                     <div className="bcard-price">
                       <div>
                         <small>Buy</small>
-                        <strong>{rupee(r.total)}</strong>
+                        <strong className="flash" key={r.total}>{rupee(r.total)}</strong>
                       </div>
                       <div>
                         <small>We buy back</small>

@@ -107,7 +107,7 @@ export default function Rates() {
               </button>
             </div>
             <small>Silver 999 fine · per kg</small>
-            <div className="bm-big silver-text">{rupee(rates.silver * 1000)}</div>
+            <div className="bm-big silver-text flash" key={Math.round(rates.silver * 1000)}>{rupee(rates.silver * 1000)}</div>
             <div className="bm-sub">
               {rupee2(rates.silver)} / g · 92.5 sterling {rupee2(rates.silver * 0.925)} / g · updated {timeAgo(updatedAt)}
             </div>
