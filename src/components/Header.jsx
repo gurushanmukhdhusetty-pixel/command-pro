@@ -58,7 +58,6 @@ const NAV = [
   ['/shop', 'Shop All'],
   ['/bullion', 'Bullion'],
   ['/rates', 'Live Rates'],
-  ['/about', 'Heritage'],
 ];
 
 export default function Header() {

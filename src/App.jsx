@@ -12,7 +12,6 @@ import Bullion from './pages/Bullion';
 import Rates from './pages/Rates';
 import Cart from './pages/Cart';
 import Wishlist from './pages/Wishlist';
-import About from './pages/About';
 import Contact from './pages/Contact';
 import Faq from './pages/Faq';
 import Admin from './pages/Admin';
@@ -26,7 +25,6 @@ const TITLES = {
   '/rates': 'Live Silver & Gold Rates Hyderabad',
   '/cart': 'Your Bag',
   '/wishlist': 'Wishlist',
-  '/about': 'Our Heritage',
   '/contact': 'Visit & Contact',
   '/faq': 'FAQ & Policies',
   '/admin': 'Store Admin',
@@ -52,7 +50,6 @@ export default function App() {
           <Route path="/rates" element={<Rates />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/wishlist" element={<Wishlist />} />
-          <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/faq" element={<Faq />} />
           <Route path="/admin" element={<Admin />} />
