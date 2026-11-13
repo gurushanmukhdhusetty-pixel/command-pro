@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Three from '../components/Three';
-import ProductArt from '../components/ProductArt';
+import ProductImage from '../components/ProductImage';
+import { useIsMobile } from '../lib/media';
+import { BULLION } from '../data/bullion';
 import ProductCard, { useTilt } from '../components/ProductCard';
 import Reveal from '../components/Reveal';
 import Charminar from '../components/Charminar';
@@ -44,7 +46,7 @@ function LineCard({ line, hero, count, from, i }) {
     <Reveal delay={i * 120}>
       <Link to={`/collections/${line.id}`} className={`line-card lc-${line.id}`} {...tilt}>
         <div className="lc-art">
-          <ProductArt art={hero.art} line={line.id} title={line.name} />
+          <ProductImage p={hero} sizes="(max-width: 760px) 80vw, 33vw" />
         </div>
         <div className="lc-body">
           <span className="eyebrow">{line.short}</span>
@@ -70,7 +72,7 @@ function Rotunda({ items }) {
       <div className="rotunda" style={{ '--n': n }}>
         {items.map((p, i) => (
           <Link key={p.id} to={`/product/${p.id}`} className="rot-card" style={{ '--i': i }}>
-            <ProductArt art={p.art} line={p.line} title={p.name} />
+            <ProductImage p={p} sizes="220px" />
             <span>{p.name}</span>
           </Link>
         ))}
@@ -82,6 +84,7 @@ function Rotunda({ items }) {
 
 export default function Home() {
   const { rates, status, settings } = useRates();
+  const mobile = useIsMobile();
   const { products } = useStore();
   const lines = Object.values(LINES);
   const byLine = (id) => products.filter((p) => p.line === id);
@@ -141,14 +144,20 @@ export default function Home() {
           </div>
           <div className="hero-3d">
             <div className="hero-ring" aria-hidden="true" />
-            <Three
-              scene="hero"
-              fallback={
-                <div className="hero-fallback">
-                  <ProductArt art={{ kind: 'kada', finish: 'silver' }} line="bridal" />
-                </div>
-              }
-            />
+            {mobile ? (
+              <div className="hero-photo">
+                <ProductImage p={products.find((x) => x.id === 'nizami-kundan-choker')} eager sizes="100vw" />
+              </div>
+            ) : (
+              <Three
+                scene="hero"
+                fallback={
+                  <div className="hero-photo">
+                    <ProductImage p={products.find((x) => x.id === 'royal-carved-kada')} eager sizes="50vw" />
+                  </div>
+                }
+              />
+            )}
           </div>
         </div>
         <div className="scroll-cue" aria-hidden="true">
@@ -175,7 +184,7 @@ export default function Home() {
       <section className="section">
         <div className="container">
           <SectionTitle eyebrow="Three houses of silver" title="Our Collections" sub="From the wedding mandap to the pooja room to your everyday — one standard of craft." />
-          <div className="lines-grid">
+          <div className="lines-grid m-hscroll">
             {lines.map((l, i) => {
               const items = byLine(l.id);
               const from = Math.min(...items.map((p) => priceProduct(p, rates, settings).total));
@@ -189,9 +198,22 @@ export default function Home() {
       {/* ───────── 3D ROTUNDA ───────── */}
       <section className="section rotunda-section">
         <div className="container">
-          <SectionTitle eyebrow="The signature rotunda" title="Masterpieces in the round" sub="Hover to pause · tap any piece to see it in 3D" />
+          <SectionTitle eyebrow="The signature rotunda" title="Masterpieces in the round" sub={mobile ? 'Swipe through our signature pieces' : 'Hover to pause · click any piece to see it in 3D'} />
         </div>
-        <Rotunda items={rot} />
+        {mobile ? (
+          <div className="container">
+            <div className="hscroll">
+              {rot.map((p) => (
+                <Link key={p.id} to={`/product/${p.id}`} className="snap-card">
+                  <ProductImage p={p} sizes="70vw" />
+                  <span>{p.name}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <Rotunda items={rot} />
+        )}
       </section>
 
       {/* ───────── PRICE TRANSPARENCY ───────── */}
@@ -200,7 +222,7 @@ export default function Home() {
           <div className="container split">
             <Reveal className="split-art">
               <div className="float-card">
-                <ProductArt art={demo.art} line={demo.line} title={demo.name} />
+                <ProductImage p={demo} sizes="(max-width: 760px) 100vw, 45vw" />
               </div>
             </Reveal>
             <Reveal delay={150}>
@@ -247,7 +269,7 @@ export default function Home() {
       <section className="section">
         <div className="container">
           <SectionTitle eyebrow="Loved in Hyderabad" title="Bestsellers" />
-          <div className="grid-products">
+          <div className="grid-products m-hscroll">
             {best.map((p, i) => (
               <Reveal key={p.id} delay={(i % 4) * 90}>
                 <ProductCard p={p} />
@@ -292,10 +314,10 @@ export default function Home() {
           <Reveal delay={150} className="bt-art">
             <div className="bt-stack">
               <div className="bt-a">
-                <ProductArt art={{ kind: 'bar', finish: 'gold24', variant: 'minted', label: '100 g' }} line="bullion" />
+                <ProductImage p={BULLION.find((b) => b.id === 'au-bar-100')} sizes="(max-width: 760px) 70vw, 30vw" />
               </div>
               <div className="bt-b">
-                <ProductArt art={{ kind: 'coin', finish: 'silver', label: '100 g' }} line="bullion" />
+                <ProductImage p={BULLION.find((b) => b.id === 'ag-coin-100')} sizes="(max-width: 760px) 70vw, 30vw" />
               </div>
             </div>
           </Reveal>

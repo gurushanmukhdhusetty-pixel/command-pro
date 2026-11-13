@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Three from '../components/Three';
-import ProductArt from '../components/ProductArt';
+import ProductImage from '../components/ProductImage';
+import { useIsMobile } from '../lib/media';
 import Reveal from '../components/Reveal';
 import { SectionTitle, Divider } from '../components/Ornament';
 import { useRates } from '../lib/rates';
@@ -9,14 +10,6 @@ import { priceBullion } from '../lib/pricing';
 import { grams, rupee, rupee2, timeAgo } from '../lib/format';
 import { BULLION } from '../data/bullion';
 
-export function bullionArt(b) {
-  return {
-    kind: b.form,
-    finish: b.metal === 'gold' ? 'gold24' : 'silver',
-    variant: b.form === 'bar' && b.weight < 500 ? 'minted' : 'cast',
-    label: grams(b.weight),
-  };
-}
 
 function Calculator() {
   const { rates, settings } = useRates();
@@ -89,6 +82,9 @@ export default function Bullion() {
   const { rates, settings, status, updatedAt, spot } = useRates();
   const { addToCart } = useStore();
   const [metal, setMetal] = useState('all');
+  const mobile = useIsMobile();
+  const [show3d, setShow3d] = useState(false);
+  const heroItem = BULLION.find((x) => x.id === 'ag-bar-1000');
   const list = BULLION.filter((b) => metal === 'all' || b.metal === metal);
   return (
     <div className="page bullion-page">
@@ -119,8 +115,19 @@ export default function Bullion() {
             </p>
           </div>
           <div className="bh-3d">
-            <Three scene="bullion" fallback={<ProductArt art={{ kind: 'bar', finish: 'silver', variant: 'cast', label: '1 kg' }} line="bullion" />} />
-            <span className="pd-hint">Drag to turn the stack</span>
+            {mobile && !show3d ? (
+              <>
+                <ProductImage p={heroItem} eager sizes="100vw" className="bh-photo" />
+                <button className="btn btn-sm btn-ghost view3d" onClick={() => setShow3d(true)}>
+                  ⟲ View in 3D
+                </button>
+              </>
+            ) : (
+              <>
+                <Three scene="bullion" fallback={<ProductImage p={heroItem} eager sizes="50vw" className="bh-photo" />} />
+                <span className="pd-hint">Drag to turn the stack</span>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -141,7 +148,7 @@ export default function Bullion() {
               return (
                 <Reveal key={b.id} delay={(i % 4) * 70} className={`bcard ${b.metal}`}>
                   <div className="bcard-art">
-                    <ProductArt art={bullionArt(b)} line="bullion" title={b.name} />
+                    <ProductImage p={b} sizes="(max-width: 760px) 50vw, 25vw" />
                   </div>
                   <div className="bcard-body">
                     <h3>{b.name}</h3>

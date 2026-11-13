@@ -1,10 +1,12 @@
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
-import ProductArt from './ProductArt';
+import ProductImage from './ProductImage';
 import { useRates } from '../lib/rates';
 import { useStore } from '../lib/store';
 import { priceProduct } from '../lib/pricing';
 import { grams, rupee } from '../lib/format';
+
+const productHasAlt = (p) => p.images?.length > 1;
 
 export function useTilt(max = 10) {
   const ref = useRef();
@@ -38,7 +40,8 @@ export default function ProductCard({ p }) {
     <article className="pcard" {...tilt}>
       <div className="pcard-inner">
         <Link to={`/product/${p.id}`} className="pcard-img">
-          <ProductArt art={p.art} line={p.line} title={p.name} />
+          <ProductImage p={p} />
+          {productHasAlt(p) && <ProductImage p={p} n={1} className="pimg-alt" />}
           <span className="pcard-shine" />
           {p.badge && <span className="pcard-badge">{p.badge}</span>}
           {p.model && <span className="pcard-3d">3D</span>}

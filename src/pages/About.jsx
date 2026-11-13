@@ -1,15 +1,19 @@
-import ProductArt from '../components/ProductArt';
+import ProductImage from '../components/ProductImage';
+import { PRODUCTS } from '../data/products';
+import { BULLION } from '../data/bullion';
+
+const find = (id) => PRODUCTS.find((p) => p.id === id) || BULLION.find((b) => b.id === id);
 import Reveal from '../components/Reveal';
 import Charminar from '../components/Charminar';
 import { SectionTitle, Divider } from '../components/Ornament';
 import { Link } from 'react-router-dom';
 
 const STEPS = [
-  ['Assay & melt', 'Every lot of silver is XRF-tested, then melted and refined to 99.9 or alloyed to 92.5 with copper.', { kind: 'bar', finish: 'silver', variant: 'cast', label: '1 kg' }],
-  ['Cast & draw', 'Wire is drawn, sheets are rolled and components are cast in our Pathergatti workshop.', { kind: 'pendant', variant: 'blackbeads', finish: 'silver' }],
-  ['Chase & engrave', 'Repoussé and chasing by hand — the Ashtalakshmi kalash alone takes four days.', { kind: 'kalash', finish: 'silver' }],
-  ['Set & polish', 'Kundan, rubies and pearls are set; pieces are oxidised or gold-polished as designed.', { kind: 'choker', finish: 'gold', gem: 'ruby' }],
-  ['Hallmark', 'Sent to a BIS assaying centre for hallmarking and a unique 6-digit HUID.', { kind: 'coin', finish: 'silver', label: 'HUID' }],
+  ['Assay & melt', 'Every lot of silver is XRF-tested, then melted and refined to 99.9 or alloyed to 92.5 with copper.', 'ag-bar-1000'],
+  ['Cast & draw', 'Wire is drawn, sheets are rolled and components are cast in our Pathergatti workshop.', 'kasulaperu-temple-haaram'],
+  ['Chase & engrave', 'Repoussé and chasing by hand — the Ashtalakshmi kalash alone takes four days.', 'ashtalakshmi-kalash'],
+  ['Set & polish', 'Kundan, rubies and pearls are set; pieces are oxidised or gold-polished as designed.', 'nizami-kundan-choker'],
+  ['Hallmark', 'Sent to a BIS assaying centre for hallmarking and a unique 6-digit HUID.', 'lakshmi-ganesh-pooja-coin'],
 ];
 
 export default function About() {
@@ -36,7 +40,7 @@ export default function About() {
             {STEPS.map(([h, t, art], i) => (
               <Reveal key={h} delay={i * 100} className="step">
                 <div className="step-art">
-                  <ProductArt art={art} line={i % 3 === 0 ? 'bridal' : i % 3 === 1 ? 'home' : 'casual'} title={h} />
+                  <ProductImage p={find(art)} n={i % 2} sizes="(max-width: 760px) 50vw, 20vw" alt={h} />
                   <span className="step-n">0{i + 1}</span>
                 </div>
                 <h3>{h}</h3>

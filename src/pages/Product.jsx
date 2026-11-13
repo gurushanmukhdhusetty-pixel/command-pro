@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import ProductArt from '../components/ProductArt';
+import ProductImage from '../components/ProductImage';
+import { productImages, useIsMobile } from '../lib/media';
 import ProductCard from '../components/ProductCard';
 import PriceBreakdown from '../components/PriceBreakdown';
 import Three from '../components/Three';
@@ -13,22 +14,95 @@ import { LINES } from '../data/products';
 import { STORE } from '../config';
 import NotFound from './NotFound';
 
-const VIEWS = [
-  { k: 'full', label: 'Front' },
-  { k: 'zoom', label: 'Detail' },
-  { k: 'close', label: 'Close-up' },
-];
+function Zoomable({ p, n }) {
+  const ref = useRef();
+  const move = (e) => {
+    const r = ref.current.getBoundingClientRect();
+    ref.current.style.setProperty('--zx', `${((e.clientX - r.left) / r.width) * 100}%`);
+    ref.current.style.setProperty('--zy', `${((e.clientY - r.top) / r.height) * 100}%`);
+  };
+  return (
+    <div className="pd-zoom" ref={ref} onMouseMove={move}>
+      <ProductImage p={p} n={n} eager sizes="(max-width: 760px) 100vw, 55vw" />
+    </div>
+  );
+}
+
+function Gallery({ p, view, setView }) {
+  const mobile = useIsMobile();
+  const imgs = productImages(p);
+  const track = useRef();
+  const [slide, setSlide] = useState(0);
+  const on3d = view === '3d' && p.model;
+  if (mobile && !on3d) {
+    return (
+      <>
+        <div className="pd-swipe" ref={track} onScroll={(e) => setSlide(Math.round(e.currentTarget.scrollLeft / e.currentTarget.clientWidth))}>
+          {imgs.map((_, i) => (
+            <div className="pd-slide" key={i}>
+              <ProductImage p={p} n={i} eager={i === 0} sizes="100vw" />
+            </div>
+          ))}
+        </div>
+        <div className="pd-dots">
+          {imgs.map((_, i) => (
+            <i key={i} className={slide === i ? 'on' : ''} />
+          ))}
+          {p.model && (
+            <button className="btn btn-sm btn-ghost view3d-inline" onClick={() => setView('3d')}>
+              ⟲ View in 3D
+            </button>
+          )}
+        </div>
+      </>
+    );
+  }
+  return (
+    <>
+      <div className={`pd-stage ${on3d ? 'is3d' : ''}`}>
+        {on3d ? (
+          <>
+            <Three scene="viewer" kind={p.model} finish={p.art.finish} gem={p.art.gem} variant={p.art.variant} label={p.art.label} className="pd-three" fallback={<ProductImage p={p} eager />} />
+            <span className="pd-hint">Drag to rotate · pinch or scroll to zoom</span>
+            {mobile && (
+              <button className="btn btn-sm btn-ghost view3d" onClick={() => setView(0)}>
+                ✕ Photos
+              </button>
+            )}
+          </>
+        ) : (
+          <Zoomable p={p} n={typeof view === 'number' ? view : 0} />
+        )}
+      </div>
+      {!mobile && (
+        <div className="pd-thumbs">
+          {imgs.map((_, i) => (
+            <button key={i} className={`pd-thumb ${view === i ? 'on' : ''}`} onClick={() => setView(i)}>
+              <ProductImage p={p} n={i} sizes="120px" />
+            </button>
+          ))}
+          {p.model && (
+            <button className={`pd-thumb t3d ${on3d ? 'on' : ''}`} onClick={() => setView('3d')}>
+              <span>3D</span>
+              <small>Rotate</small>
+            </button>
+          )}
+        </div>
+      )}
+    </>
+  );
+}
 
 export default function Product() {
   const { id } = useParams();
   const { rates, settings, status } = useRates();
   const { products, addToCart, toggleWish, wish } = useStore();
   const p = products.find((x) => x.id === id);
-  const [view, setView] = useState(p?.model ? '3d' : 'full');
+  const [view, setView] = useState(0);
   const [size, setSize] = useState('');
   const [qty, setQty] = useState(1);
   useEffect(() => {
-    setView(p?.model ? '3d' : 'full');
+    setView(0);
     setSize(p?.sizes?.[1] || p?.sizes?.[0] || '');
     setQty(1);
     if (p) document.title = `${p.name} · VCH Jewellers`;
@@ -49,33 +123,7 @@ export default function Product() {
         </div>
         <div className="pd-grid">
           <div className="pd-gallery">
-            <div className={`pd-stage ${view}`}>
-              {view === '3d' && p.model ? (
-                <>
-                  <Three scene="viewer" kind={p.model} finish={p.art.finish} gem={p.art.gem} variant={p.art.variant} label={p.art.label} className="pd-three" fallback={<ProductArt art={p.art} line={p.line} title={p.name} />} />
-                  <span className="pd-hint">Drag to rotate · scroll to zoom</span>
-                </>
-              ) : (
-                <div className={`pd-art v-${view}`}>
-                  <ProductArt art={p.art} line={p.line} title={p.name} />
-                </div>
-              )}
-            </div>
-            <div className="pd-thumbs">
-              {p.model && (
-                <button className={`pd-thumb t3d ${view === '3d' ? 'on' : ''}`} onClick={() => setView('3d')}>
-                  <span>3D</span>
-                  <small>Rotate</small>
-                </button>
-              )}
-              {VIEWS.map((v) => (
-                <button key={v.k} className={`pd-thumb ${view === v.k ? 'on' : ''}`} onClick={() => setView(v.k)}>
-                  <div className={`pd-art v-${v.k}`}>
-                    <ProductArt art={p.art} line={p.line} title={v.label} />
-                  </div>
-                </button>
-              ))}
-            </div>
+            <Gallery p={p} view={view} setView={setView} />
           </div>
 
           <div className="pd-info">
@@ -157,10 +205,20 @@ export default function Product() {
           </div>
         </div>
 
+        <div className="buybar">
+          <div>
+            <small>{p.name}</small>
+            <strong>{rupee(price.total * qty)}</strong>
+          </div>
+          <button className="btn btn-gold" onClick={() => addToCart(p.id, { size, qty })}>
+            Add to bag
+          </button>
+        </div>
+
         {related.length > 0 && (
           <section className="section">
             <SectionTitle eyebrow="From the same house" title="You may also love" />
-            <div className="grid-products">
+            <div className="grid-products m-hscroll">
               {related.map((r) => (
                 <ProductCard key={r.id} p={r} />
               ))}

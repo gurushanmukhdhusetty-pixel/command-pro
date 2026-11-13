@@ -3,6 +3,7 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Toast from './components/Toast';
+import BottomNav from './components/BottomNav';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
 import Collection from './pages/Collection';
@@ -60,6 +61,7 @@ export default function App() {
       </main>
       <Footer />
       <Toast />
+      <BottomNav />
     </>
   );
 }

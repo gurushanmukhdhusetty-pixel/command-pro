@@ -1,16 +1,14 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import ProductArt, { ART_KINDS } from '../components/ProductArt';
+import ProductImage from '../components/ProductImage';
 import PriceBreakdown from '../components/PriceBreakdown';
 import { SectionTitle } from '../components/Ornament';
 import { useRates } from '../lib/rates';
 import { useStore } from '../lib/store';
 import { priceProduct } from '../lib/pricing';
 import { rupee } from '../lib/format';
-import { LINES, CATEGORIES } from '../data/products';
-import { MODEL_KINDS } from '../data/models';
+import { LINES, CATEGORIES, PRODUCTS } from '../data/products';
 
-const VARIANTS = { jhumka: ['', 'mini'], anklet: ['light', 'heavy'], pendant: ['lotus', 'heart', 'blackbeads'], bowl: ['', 'panchapatra'], bar: ['cast', 'minted'] };
 const blank = () => ({
   id: '',
   name: '',
@@ -21,7 +19,8 @@ const blank = () => ({
   makingType: 'perGram',
   making: 200,
   extras: [{ label: '', amount: 0 }],
-  art: { kind: 'jhumka', finish: 'silver', gem: 'none', variant: '' },
+  imageOf: 'charminar-oxidised-jhumkas',
+  images: [],
   description: '',
   details: [],
   sizes: null,
@@ -35,22 +34,23 @@ function ProductForm({ initial, onDone }) {
   const [p, setP] = useState(initial || blank());
   const [sizes, setSizes] = useState((initial?.sizes || []).join(', '));
   const set = (k, v) => setP((x) => ({ ...x, [k]: v }));
-  const setArt = (k, v) => setP((x) => ({ ...x, art: { ...x.art, [k]: v } }));
   const price = priceProduct({ ...p, weight: +p.weight || 0, making: +p.making || 0 }, rates, settings);
 
   const onFile = (e) => {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    if (f.size > 1.5 * 1024 * 1024) return notify('Image too large — please use one under 1.5 MB');
-    const r = new FileReader();
-    r.onload = () => setArt('image', r.result);
-    r.readAsDataURL(f);
+    const files = [...(e.target.files || [])].slice(0, 3 - (p.images?.length || 0));
+    files.forEach((f) => {
+      if (f.size > 1.5 * 1024 * 1024) return notify('Each photo must be under 1.5 MB');
+      const r = new FileReader();
+      r.onload = () => setP((x) => ({ ...x, images: [...(x.images || []), r.result].slice(0, 3) }));
+      r.readAsDataURL(f);
+    });
   };
 
   const submit = (e) => {
     e.preventDefault();
     const id = p.id || `${p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}-${Date.now().toString(36)}`;
-    const model = p.art.image ? null : p.art.kind === 'bowl' && p.art.variant === 'panchapatra' ? 'glass' : MODEL_KINDS.includes(p.art.kind) ? p.art.kind : null;
+    const base = PRODUCTS.find((x) => x.id === p.imageOf);
+    const own = p.images?.length > 0;
     saveProduct({
       ...p,
       id,
@@ -59,7 +59,10 @@ function ProductForm({ initial, onDone }) {
       purity: +p.purity,
       extras: p.extras.filter((x) => x.label && +x.amount > 0).map((x) => ({ label: x.label, amount: +x.amount })),
       sizes: sizes.trim() ? sizes.split(',').map((s) => s.trim()).filter(Boolean) : null,
-      model,
+      images: own ? p.images : [],
+      imageOf: own ? null : p.imageOf,
+      art: own ? { finish: 'silver' } : base?.art,
+      model: own ? null : base?.model || null,
       rating: p.rating || null,
     });
     notify(initial ? 'Product updated' : 'Product added to the catalogue');
@@ -157,57 +160,36 @@ function ProductForm({ initial, onDone }) {
           <textarea className="input" rows="3" value={p.description} onChange={(e) => set('description', e.target.value)} />
         </label>
 
-        <h3 style={{ marginTop: 18 }}>Product image</h3>
-        <p className="tiny muted">Pick a generated illustration (3D view is enabled automatically where available) or upload your own photo.</p>
-        <div className="form-row cols3">
+        <h3 style={{ marginTop: 18 }}>Product photos</h3>
+        <p className="tiny muted">Upload up to 3 real photos of the piece (first one is the main image), or reuse the studio photography of a similar catalogue piece.</p>
+        <label className="file">
+          Upload photos
+          <input type="file" accept="image/*" multiple onChange={onFile} />
+        </label>
+        {p.images?.length > 0 && (
+          <div className="thumb-row">
+            {p.images.map((src, i) => (
+              <div key={i} className="thumb">
+                <img src={src} alt="" />
+                <button type="button" onClick={() => set('images', p.images.filter((_, j) => j !== i))}>
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        {!p.images?.length && (
           <label>
-            Design
-            <select className="input" value={p.art.kind} onChange={(e) => setP((x) => ({ ...x, art: { ...x.art, kind: e.target.value, variant: VARIANTS[e.target.value]?.[0] || '' } }))}>
-              {ART_KINDS.map((k) => (
-                <option key={k}>{k}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Finish
-            <select className="input" value={p.art.finish} onChange={(e) => setArt('finish', e.target.value)}>
-              <option value="silver">Silver</option>
-              <option value="oxidised">Oxidised</option>
-              <option value="gold">Gold polish</option>
-            </select>
-          </label>
-          <label>
-            Stone
-            <select className="input" value={p.art.gem} onChange={(e) => setArt('gem', e.target.value)}>
-              {['none', 'ruby', 'emerald', 'sapphire', 'diamond', 'pearl', 'kundan'].map((g) => (
-                <option key={g}>{g}</option>
-              ))}
-            </select>
-          </label>
-        </div>
-        {VARIANTS[p.art.kind] && (
-          <label>
-            Style variant
-            <select className="input" value={p.art.variant || ''} onChange={(e) => setArt('variant', e.target.value)}>
-              {VARIANTS[p.art.kind].map((v) => (
-                <option key={v} value={v}>
-                  {v || 'standard'}
+            Or use studio photos of
+            <select className="input" value={p.imageOf} onChange={(e) => set('imageOf', e.target.value)}>
+              {PRODUCTS.map((x) => (
+                <option key={x.id} value={x.id}>
+                  {x.name}
                 </option>
               ))}
             </select>
           </label>
         )}
-        <div className="form-row">
-          <label className="file">
-            Upload photo instead
-            <input type="file" accept="image/*" onChange={onFile} />
-          </label>
-          {p.art.image && (
-            <button type="button" className="btn btn-sm btn-ghost" onClick={() => setArt('image', null)}>
-              Remove photo
-            </button>
-          )}
-        </div>
         <button className="btn btn-gold block" style={{ marginTop: 14 }}>
           {initial ? 'Save changes' : 'Publish product'}
         </button>
@@ -215,7 +197,7 @@ function ProductForm({ initial, onDone }) {
       <div className="admin-preview">
         <div className="f-label">Live preview</div>
         <div className="preview-card">
-          <ProductArt art={p.art} line={p.line} title={p.name} />
+          <ProductImage p={p} eager sizes="400px" />
           <div className="pv-body">
             <b>{p.name || 'Product name'}</b>
             <span className="muted small">
@@ -331,13 +313,13 @@ export default function Admin() {
         {tab === 'rates' && <RateSettings />}
         {tab === 'list' &&
           (editing ? (
-            <ProductForm key={editing.id} initial={{ ...editing, extras: editing.extras?.length ? editing.extras : [{ label: '', amount: 0 }] }} onDone={() => setEditing(null)} />
+            <ProductForm key={editing.id} initial={{ ...editing, images: editing.images || [], imageOf: editing.imageOf || 'charminar-oxidised-jhumkas', extras: editing.extras?.length ? editing.extras : [{ label: '', amount: 0 }] }} onDone={() => setEditing(null)} />
           ) : custom.length ? (
             <div className="admin-list">
               {custom.map((p) => (
                 <div key={p.id} className="cart-row">
                   <Link to={`/product/${p.id}`} className="cart-img">
-                    <ProductArt art={p.art} line={p.line} title={p.name} />
+                    <ProductImage p={p} sizes="96px" />
                   </Link>
                   <div className="cart-info">
                     <b>{p.name}</b>

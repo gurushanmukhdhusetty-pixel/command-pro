@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import ProductArt from '../components/ProductArt';
+import ProductImage from '../components/ProductImage';
 import { Divider } from '../components/Ornament';
 import Reveal from '../components/Reveal';
 import { ProductBrowser } from './Shop';
@@ -52,7 +52,7 @@ export default function Collection() {
           <div className="coll-stack">
             {showcase.map((p, i) => (
               <Link key={p.id} to={`/product/${p.id}`} className={`cs cs-${i}`}>
-                <ProductArt art={p.art} line={p.line} title={p.name} />
+                <ProductImage p={p} eager sizes="(max-width: 760px) 60vw, 25vw" />
               </Link>
             ))}
           </div>

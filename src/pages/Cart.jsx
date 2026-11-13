@@ -1,12 +1,11 @@
 import { Link } from 'react-router-dom';
-import ProductArt from '../components/ProductArt';
+import ProductImage from '../components/ProductImage';
 import { SectionTitle } from '../components/Ornament';
 import { useRates } from '../lib/rates';
 import { useStore } from '../lib/store';
 import { priceBullion, priceProduct } from '../lib/pricing';
 import { grams, rupee } from '../lib/format';
 import { BULLION } from '../data/bullion';
-import { bullionArt } from './Bullion';
 import { STORE } from '../config';
 
 export default function Cart() {
@@ -18,12 +17,12 @@ export default function Cart() {
         const b = BULLION.find((x) => x.id === c.id);
         if (!b) return null;
         const r = priceBullion(b, rates, settings);
-        return { c, name: b.name, art: bullionArt(b), line: 'bullion', meta: `${b.metal === 'gold' ? '24K 999.9' : '999 silver'} · ${grams(b.weight)}`, unit: r.total, gst: r.gst, link: '/bullion' };
+        return { c, name: b.name, item: b, meta: `${b.metal === 'gold' ? '24K 999.9' : '999 silver'} · ${grams(b.weight)}`, unit: r.total, gst: r.gst, link: '/bullion' };
       }
       const p = products.find((x) => x.id === c.id);
       if (!p) return null;
       const r = priceProduct(p, rates, settings);
-      return { c, name: p.name, art: p.art, line: p.line, meta: `${p.purity === 999 ? '99.9' : '92.5'} · ${grams(p.weight)}${c.size ? ` · Size ${c.size}` : ''}`, unit: r.total, gst: r.gst, link: `/product/${p.id}` };
+      return { c, name: p.name, item: p, meta: `${p.purity === 999 ? '99.9' : '92.5'} · ${grams(p.weight)}${c.size ? ` · Size ${c.size}` : ''}`, unit: r.total, gst: r.gst, link: `/product/${p.id}` };
     })
     .filter(Boolean);
   const total = lines.reduce((s, l) => s + l.unit * l.c.qty, 0);
@@ -53,7 +52,7 @@ export default function Cart() {
               {lines.map((l) => (
                 <div className="cart-row" key={l.c.key}>
                   <Link to={l.link} className="cart-img">
-                    <ProductArt art={l.art} line={l.line} title={l.name} />
+                    <ProductImage p={l.item} sizes="96px" />
                   </Link>
                   <div className="cart-info">
                     <Link to={l.link}>
