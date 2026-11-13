@@ -6,12 +6,17 @@ export function deriveRates(spot, settings) {
   if (settings.mode === 'manual') {
     const silver = +settings.manualSilverPerGram;
     const gold24 = +settings.manualGold24Per10g;
-    return { silver, gold24, gold22: gold24 * 0.916 };
+    return { silver, gold24, gold22: gold24 * 0.916, source: 'VCH store board rate' };
+  }
+  // Indian market rate (Hyderabad city rate / IBJA) — what Google and other jewellers show
+  const ind = spot.india;
+  if (ind && ind.silver > 0 && ind.gold24 > 0) {
+    return { silver: ind.silver, gold24: ind.gold24, gold22: ind.gold22 || ind.gold24 * 0.916, source: ind.source };
   }
   const landed = (1 + settings.importDutyPct / 100) * (1 + settings.localPremiumPct / 100);
   const silver = ((spot.xagUsd * spot.usdInr) / OZ) * landed; // ₹ per gram, 999
   const gold24 = ((spot.xauUsd * spot.usdInr) / OZ) * 10 * landed; // ₹ per 10 g, 999
-  return { silver, gold24, gold22: gold24 * 0.916 };
+  return { silver, gold24, gold22: gold24 * 0.916, source: 'International spot parity' };
 }
 
 export const PURITY = {

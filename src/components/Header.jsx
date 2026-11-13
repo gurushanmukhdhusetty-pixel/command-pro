@@ -33,7 +33,7 @@ export function RateTicker() {
           <b>{k}</b> {v} <Delta now={n} prev={p} />
         </span>
       ))}
-      <span className="tick muted">Hyderabad · excl. GST · updated {timeAgo(updatedAt)}</span>
+      <span className="tick muted">{rates.source || 'Hyderabad'} · excl. GST · updated {timeAgo(updatedAt)}</span>
     </>
   );
   return (

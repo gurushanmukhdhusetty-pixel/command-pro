@@ -20,11 +20,16 @@ export const PRICING_DEFAULTS = {
   mode: 'live', // 'live' | 'manual'
   importDutyPct: 6, // Basic customs duty + AIDC on silver/gold (Union Budget 2024)
   localPremiumPct: 1.0, // Hyderabad dealer premium over landed cost
-  manualSilverPerGram: 220, // ₹ / g, fine 999 (used when mode = manual)
-  manualGold24Per10g: 130500, // ₹ / 10 g, 24K 999
+  manualSilverPerGram: 195, // ₹ / g, fine 999 (used when mode = manual)
+  manualGold24Per10g: 137350, // ₹ / 10 g, 24K 999
   gstPct: 3,
   hallmarkFee: 45, // BIS HUID fee per piece
 };
 
 // Used only if the live feeds are unreachable and nothing is cached
-export const FALLBACK_SPOT = { xagUsd: 72.0, xauUsd: 4300, usdInr: 88.6 };
+export const FALLBACK_SPOT = {
+  xagUsd: 61.0,
+  xauUsd: 4480,
+  usdInr: 88.7,
+  india: { silver: 195, gold24: 137350, gold22: 125900, source: 'Hyderabad rate (13 Nov 2026)' },
+};

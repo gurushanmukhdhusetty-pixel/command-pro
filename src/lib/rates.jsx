@@ -30,45 +30,52 @@ async function fetchDirect() {
   return { xagUsd: +xag.price, xauUsd: +xau.price, usdInr: +usdInr };
 }
 
-const valid = (s) => s && s.xagUsd > 1 && s.xauUsd > 100 && s.usdInr > 30;
+const sane = (i) => i && i.silver > 50 && i.silver < 1000 && i.gold24 > 30000 && i.gold24 < 500000;
+const spotOk = (s) => s && s.xagUsd > 1 && s.xauUsd > 100 && s.usdInr > 30;
 
-// 1) our own server endpoint (/api/rates, no CORS issues) → 2) direct public APIs
-async function fetchSpot() {
+// 1) our server endpoint (/api/rates → Hyderabad city rate, IBJA, spot) → 2) direct spot APIs
+async function fetchSpot(prev) {
   try {
     const d = await fetchJSON('/api/rates');
-    const s = { xagUsd: +d.xagUsd, xauUsd: +d.xauUsd, usdInr: +d.usdInr };
-    if (valid(s)) return s;
+    const out = {
+      xagUsd: +d.xagUsd || prev.xagUsd,
+      xauUsd: +d.xauUsd || prev.xauUsd,
+      usdInr: +d.usdInr || prev.usdInr,
+      india: sane(d.india) ? d.india : null,
+      ibja: sane(d.ibja) ? d.ibja : null,
+    };
+    if (out.india || spotOk(d)) return out;
   } catch {
     /* fall through */
   }
   const s = await fetchDirect();
-  if (!valid(s)) throw new Error('bad data');
-  return s;
+  if (!spotOk(s)) throw new Error('bad data');
+  return { ...s, india: null, ibja: null };
 }
 
 export function RatesProvider({ children }) {
-  const cached = load('vch.spot', null);
+  const cached = load('vch.spot2', null);
   const [spot, setSpot] = useState(cached?.spot ?? FALLBACK_SPOT);
   const [prevSpot, setPrevSpot] = useState(null);
   const [status, setStatus] = useState(cached ? 'cached' : 'loading');
   const [updatedAt, setUpdatedAt] = useState(cached?.at ?? null);
   const [settings, setSettingsState] = useState(() => ({ ...PRICING_DEFAULTS, ...load('vch.settings', {}) }));
-  const [ticks, setTicks] = useState(() => load('vch.ticks', []));
+  const [ticks, setTicks] = useState(() => load('vch.ticks2', []));
   const spotRef = useRef(spot);
 
   const refresh = useCallback(async () => {
     try {
-      const s = await fetchSpot();
+      const s = await fetchSpot(spotRef.current);
       setPrevSpot(spotRef.current);
       spotRef.current = s;
       setSpot(s);
       const at = Date.now();
       setUpdatedAt(at);
       setStatus('live');
-      save('vch.spot', { spot: s, at });
+      save('vch.spot2', { spot: s, at });
       setTicks((t) => {
-        const next = [...t, { at, ...s }].filter((x) => at - x.at < 1000 * 60 * 60 * 24 * 3).slice(-400);
-        save('vch.ticks', next);
+        const next = [...t, { at, xagUsd: s.xagUsd, xauUsd: s.xauUsd, usdInr: s.usdInr, silver: s.india?.silver }].filter((x) => at - x.at < 1000 * 60 * 60 * 24 * 3).slice(-400);
+        save('vch.ticks2', next);
         return next;
       });
       return true;

@@ -76,7 +76,7 @@ export default function Rates() {
     for (let i = 1; i < 30; i++) pts.unshift(pts[0] * (1 + (rnd() - 0.52) * 0.018));
     return pts;
   }, [rates.silver]);
-  const session = ticks.map((t) => ((t.xagUsd * t.usdInr) / OZ) * landed);
+  const session = ticks.map((t) => t.silver || ((t.xagUsd * t.usdInr) / OZ) * landed);
 
   const silverRows = [1, 10, 100, 500, 1000];
   const goldRows = [1, 8, 10, 100];
@@ -123,36 +123,30 @@ export default function Rates() {
         <section className="section">
           <div className="split top">
             <Reveal>
-              <h3 className="h3">How we arrive at today’s silver rate</h3>
+              <h3 className="h3">Where today’s rate comes from</h3>
               <div className="formula">
                 <div>
-                  <span>① International spot (XAG/USD)</span>
-                  <b>${spot.xagUsd.toFixed(2)} / troy oz</b>
+                  <span>Hyderabad city rate (Goodreturns · as shown on Google)</span>
+                  <b>{spot.india?.source?.startsWith('Goodreturns') ? `${rupee2(spot.india.silver)} / g` : '—'}</b>
                 </div>
                 <div>
-                  <span>② USD → INR</span>
-                  <b>₹{spot.usdInr.toFixed(3)}</b>
+                  <span>IBJA national benchmark</span>
+                  <b>{spot.ibja ? `${rupee2(spot.ibja.silver)} / g` : '—'}</b>
                 </div>
                 <div>
-                  <span>③ Per gram (÷ 31.1035 g/oz)</span>
-                  <b>{rupee2(intl)}</b>
-                </div>
-                <div>
-                  <span>④ + Import duty {settings.importDutyPct}%</span>
-                  <b>{rupee2(intl * (1 + settings.importDutyPct / 100))}</b>
-                </div>
-                <div>
-                  <span>⑤ + Hyderabad dealer premium {settings.localPremiumPct}%</span>
-                  <b>{rupee2(intl * landed)}</b>
+                  <span>International parity (${spot.xagUsd.toFixed(2)}/oz × ₹{spot.usdInr.toFixed(2)} + {settings.importDutyPct}% duty)</span>
+                  <b>{rupee2(intl * (1 + settings.importDutyPct / 100))} / g</b>
                 </div>
                 <div className="t">
-                  <span>Silver 999 rate (excl. GST)</span>
+                  <span>Silver 999 rate used · {rates.source}</span>
                   <b>{rupee2(rates.silver)} / g</b>
                 </div>
               </div>
               <p className="tiny muted">
-                Sources: gold-api.com (spot), open.er-api.com (FX). If the feeds are unreachable the last known rate is used and marked “indicative”.
+                Like other Indian jewellers, we price on the local Hyderabad market rate (excl. GST), refreshed every few minutes. If it is unavailable we
+                fall back to the IBJA benchmark, then to international spot parity, and label the price “indicative”.
                 {settings.mode === 'manual' && ' The store has currently set a manual board rate.'}
+                {spot.india?.asOf && ` Market date: ${spot.india.asOf}.`}
               </p>
             </Reveal>
             <Reveal delay={120}>
