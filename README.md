@@ -45,5 +45,7 @@ If the feeds can't be reached, the site uses the last cached rate (or a default)
 
 - Store details (address, phone, WhatsApp, GSTIN): `src/config.js` — currently placeholders.
 - Catalogue: `src/data/products.js`, `src/data/bullion.js`.
-- Product images: drawn as SVG in `src/components/ProductArt.jsx`; 3D models are in `src/three/Models.jsx`. In the admin page you can also upload a real photo.
+- Product photos: `public/products/<product-id>-1.webp` (+ `-1-sm.webp`), listed in `src/data/photos.js`. Only products with a photo appear in the shop. Add a new photo by saving it there and adding the id to `photos.js`.
+- Studio renders: `render.html` + `scripts/render-products.cjs` render photoreal images from the 3D models in `src/three/` (run `npx vite --port 5199`, then the script; convert with `scripts/convert-renders.py`).
+- Palette: Emerald & Ivory (tokens at the top of `src/styles.css`).
 - Products added in the admin page are stored in that browser (localStorage). To share them with all visitors, connect a backend.
