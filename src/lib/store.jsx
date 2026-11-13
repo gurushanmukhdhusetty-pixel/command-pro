@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { PRODUCTS } from '../data/products';
+import { PHOTOS } from '../data/photos';
 import { load, save } from './storage';
 
 const StoreCtx = createContext(null);
@@ -25,7 +26,8 @@ export function StoreProvider({ children }) {
   const updWish = useMemo(() => persist(setWish, 'vch.wish'), []);
   const updCustom = useMemo(() => persist(setCustom, 'vch.products'), []);
 
-  const products = useMemo(() => [...custom, ...PRODUCTS], [custom]);
+  // only list catalogue pieces that have a real photo
+  const products = useMemo(() => [...custom, ...PRODUCTS.filter((p) => PHOTOS.has(p.id))], [custom]);
 
   const value = useMemo(
     () => ({

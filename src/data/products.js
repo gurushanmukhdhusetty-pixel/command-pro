@@ -1,3 +1,418 @@
+// Oxidised silver sets photographed in-store
+const PHOTO_SETS = [
+ {
+  "id": "mandala-oxidised-bridal-set",
+  "name": "Mandala Oxidised Bridal Set",
+  "line": "bridal",
+  "category": "Bridal Sets",
+  "purity": 925,
+  "weight": 186,
+  "makingType": "perGram",
+  "making": 140,
+  "extras": [
+   {
+    "label": "Ghungroo work",
+    "amount": 1200
+   }
+  ],
+  "art": {
+   "finish": "oxidised"
+  },
+  "model": null,
+  "rating": 4.8,
+  "reviews": 40,
+  "description": "A complete oxidised trousseau \u2014 mandala collar necklace, dome jhumkas, a stack of four carved bangles, a long mandala pendant chain and an adjustable ring.",
+  "details": [
+   "Necklace, jhumkas, 4 bangles, pendant chain, ring",
+   "Hand-oxidised 92.5 silver",
+   "Adjustable thread closure"
+  ],
+  "badge": "Signature"
+ },
+ {
+  "id": "darpan-mirror-bridal-set",
+  "name": "Darpan Mirror Bridal Set",
+  "line": "bridal",
+  "category": "Bridal Sets",
+  "purity": 925,
+  "weight": 228,
+  "makingType": "perGram",
+  "making": 150,
+  "extras": [
+   {
+    "label": "Mirror (darpan) work",
+    "amount": 1800
+   },
+   {
+    "label": "Ghungroo work",
+    "amount": 1400
+   }
+  ],
+  "art": {
+   "finish": "oxidised"
+  },
+  "model": null,
+  "rating": 4.8,
+  "reviews": 57,
+  "description": "Square mirror-set collar with mini jhumka drops, matching maang tikka, jhumkas, ear cuffs, ghungroo bangles and ring.",
+  "details": [
+   "7-piece set",
+   "Hand-set mirror work",
+   "Ghungroo bangles"
+  ],
+  "badge": "Bestseller"
+ },
+ {
+  "id": "lakshmi-temple-choker-set",
+  "name": "Lakshmi Temple Choker Set",
+  "line": "bridal",
+  "category": "Bridal Sets",
+  "purity": 925,
+  "weight": 158,
+  "makingType": "perGram",
+  "making": 160,
+  "extras": [
+   {
+    "label": "Ghungroo work",
+    "amount": 1100
+   }
+  ],
+  "art": {
+   "finish": "oxidised"
+  },
+  "model": null,
+  "rating": 4.8,
+  "reviews": 74,
+  "description": "A wide temple choker of Lakshmi panels and rosettes with a ghungroo fringe, with jhumkas, jhumka maang tikka and ear chains.",
+  "details": [
+   "Choker, jhumkas, tikka, ear chains",
+   "Repouss\u00e9 Lakshmi panels",
+   "Black thread dori"
+  ],
+  "badge": "Handcrafted"
+ },
+ {
+  "id": "banjara-tribal-choker",
+  "name": "Banjara Tribal Choker & Earrings",
+  "line": "casual",
+  "category": "Necklaces",
+  "purity": 925,
+  "weight": 74,
+  "makingType": "perGram",
+  "making": 150,
+  "extras": [
+   {
+    "label": "Ghungroo work",
+    "amount": 600
+   }
+  ],
+  "art": {
+   "finish": "oxidised"
+  },
+  "model": null,
+  "rating": 4.8,
+  "reviews": 91,
+  "description": "Bold tribal-panel choker with a dense ghungroo fringe and matching drop earrings, from our Banjara edit.",
+  "details": [
+   "Choker + earrings",
+   "Oxidised 92.5 silver",
+   "Adjustable"
+  ],
+  "badge": "New"
+ },
+ {
+  "id": "rajwadi-choker-tikka-cuff",
+  "name": "Rajwadi Choker, Tikka & Cuff Set",
+  "line": "bridal",
+  "category": "Bridal Sets",
+  "purity": 925,
+  "weight": 214,
+  "makingType": "perGram",
+  "making": 150,
+  "extras": [
+   {
+    "label": "Kundan stones",
+    "amount": 1600
+   },
+   {
+    "label": "Ghungroo work",
+    "amount": 1300
+   }
+  ],
+  "art": {
+   "finish": "oxidised"
+  },
+  "model": null,
+  "rating": 4.8,
+  "reviews": 108,
+  "description": "Rajwadi kundan panel choker with peacock passa tikka, ghungroo cuff and earrings.",
+  "details": [
+   "Choker, passa tikka, cuff, earrings",
+   "Kundan stones",
+   "Black thread dori"
+  ]
+ },
+ {
+  "id": "peacock-long-haaram-set",
+  "name": "Peacock Long Haaram Set",
+  "line": "bridal",
+  "category": "Bridal Sets",
+  "purity": 925,
+  "weight": 176,
+  "makingType": "perGram",
+  "making": 140,
+  "extras": [],
+  "art": {
+   "finish": "oxidised"
+  },
+  "model": null,
+  "rating": 4.8,
+  "reviews": 125,
+  "description": "Long haaram with a peacock pendant and a short collar, studs, toe rings, cocktail ring and lotus-bud bangles.",
+  "details": [
+   "Long haaram + short necklace",
+   "Studs, rings and bangles",
+   "Oxidised finish"
+  ]
+ },
+ {
+  "id": "ghungroo-collar-jhumka-set",
+  "name": "Ghungroo Collar & Jhumka Set",
+  "line": "bridal",
+  "category": "Necklaces",
+  "purity": 925,
+  "weight": 122,
+  "makingType": "perGram",
+  "making": 150,
+  "extras": [
+   {
+    "label": "Ghungroo work",
+    "amount": 900
+   }
+  ],
+  "art": {
+   "finish": "oxidised"
+  },
+  "model": null,
+  "rating": 4.8,
+  "reviews": 142,
+  "description": "Heavy collar necklace of crescent motifs finished in a cascade of ghungroos, with chandelier jhumkas.",
+  "details": [
+   "Collar + jhumkas",
+   "Hook closure",
+   "Oxidised 92.5 silver"
+  ],
+  "badge": "Bestseller"
+ },
+ {
+  "id": "mandala-pendant-chain",
+  "name": "Mandala Pendant Chain & Studs",
+  "line": "casual",
+  "category": "Chains & Pendants",
+  "purity": 925,
+  "weight": 31,
+  "makingType": "perGram",
+  "making": 170,
+  "extras": [],
+  "art": {
+   "finish": "oxidised"
+  },
+  "model": null,
+  "rating": 4.8,
+  "reviews": 159,
+  "description": "Openwork mandala pendant on a snake chain with matching cluster studs \u2014 easy everyday silver.",
+  "details": [
+   "Snake chain 18 in",
+   "Pendant + studs",
+   "Hook clasp"
+  ]
+ },
+ {
+  "id": "noor-mirror-choker",
+  "name": "Mirror Panel Choker & Earrings",
+  "line": "casual",
+  "category": "Necklaces",
+  "purity": 925,
+  "weight": 78,
+  "makingType": "perGram",
+  "making": 150,
+  "extras": [
+   {
+    "label": "Mirror work",
+    "amount": 700
+   }
+  ],
+  "art": {
+   "finish": "oxidised"
+  },
+  "model": null,
+  "rating": 4.8,
+  "reviews": 176,
+  "description": "Square mirror panels with ghungroo clusters on a black dori, with matching mirror earrings.",
+  "details": [
+   "Choker + earrings",
+   "Mirror work",
+   "Adjustable dori"
+  ]
+ },
+ {
+  "id": "black-bead-choker-earchain-set",
+  "name": "Black Bead Choker & Ear Chain Set",
+  "line": "bridal",
+  "category": "Bridal Sets",
+  "purity": 925,
+  "weight": 136,
+  "makingType": "perGram",
+  "making": 140,
+  "extras": [
+   {
+    "label": "Black beads",
+    "amount": 600
+   }
+  ],
+  "art": {
+   "finish": "oxidised"
+  },
+  "model": null,
+  "rating": 4.8,
+  "reviews": 193,
+  "description": "Black bead choker with oxidised rosettes, mandala jhumkas with ear chains and a matching maang tikka.",
+  "details": [
+   "Choker, jhumkas with ear chains, tikka",
+   "Black glass beads",
+   "Oxidised finish"
+  ],
+  "badge": "New"
+ },
+ {
+  "id": "kahani-story-choker",
+  "name": "Kahani Story Choker & Earrings",
+  "line": "casual",
+  "category": "Necklaces",
+  "purity": 925,
+  "weight": 56,
+  "makingType": "perGram",
+  "making": 170,
+  "extras": [
+   {
+    "label": "Pearl drops",
+    "amount": 300
+   }
+  ],
+  "art": {
+   "finish": "oxidised"
+  },
+  "model": null,
+  "rating": 4.8,
+  "reviews": 210,
+  "description": "A storytelling choker of tiny figures, umbrellas and birds with pearl drops \u2014 playful oxidised silver.",
+  "details": [
+   "Choker + earrings",
+   "Pearl drops",
+   "Thread closure"
+  ],
+  "badge": "New"
+ },
+ {
+  "id": "everyday-choker-jhumka-set",
+  "name": "Everyday Choker & Jhumka Set",
+  "line": "casual",
+  "category": "Necklaces",
+  "purity": 925,
+  "weight": 33,
+  "makingType": "perGram",
+  "making": 170,
+  "extras": [],
+  "art": {
+   "finish": "oxidised"
+  },
+  "model": null,
+  "rating": 4.8,
+  "reviews": 227,
+  "description": "A slim oxidised leaf-edge choker with small dome jhumkas \u2014 light enough for daily wear.",
+  "details": [
+   "Choker + jhumkas",
+   "Adjustable chain",
+   "Oxidised finish"
+  ],
+  "badge": "Bestseller"
+ },
+ {
+  "id": "mirror-hasli-jhumka-set",
+  "name": "Mirror Hasli & Jhumka Set",
+  "line": "casual",
+  "category": "Necklaces",
+  "purity": 925,
+  "weight": 64,
+  "makingType": "perGram",
+  "making": 150,
+  "extras": [
+   {
+    "label": "Mirror work",
+    "amount": 600
+   }
+  ],
+  "art": {
+   "finish": "oxidised"
+  },
+  "model": null,
+  "rating": 4.8,
+  "reviews": 244,
+  "description": "Hasli-style necklace of beaded bars and round mirrors with ghungroo drops, with mini jhumkas.",
+  "details": [
+   "Necklace + jhumkas",
+   "Mirror work",
+   "Black thread dori"
+  ]
+ },
+ {
+  "id": "haath-phool-ring-chain",
+  "name": "Haath Phool Ring Chain",
+  "line": "casual",
+  "category": "Rings",
+  "purity": 925,
+  "weight": 14,
+  "makingType": "perGram",
+  "making": 190,
+  "extras": [],
+  "art": {
+   "finish": "oxidised"
+  },
+  "model": null,
+  "rating": 4.8,
+  "reviews": 261,
+  "description": "A flower ring linked by chain to a ghungroo statement ring \u2014 a modern haath phool.",
+  "details": [
+   "Two adjustable rings",
+   "Ghungroo drops",
+   "Oxidised 92.5 silver"
+  ],
+  "badge": "Gift"
+ },
+ {
+  "id": "peacock-pendant-long-set",
+  "name": "Peacock Pendant Long Set",
+  "line": "bridal",
+  "category": "Bridal Sets",
+  "purity": 925,
+  "weight": 148,
+  "makingType": "perGram",
+  "making": 140,
+  "extras": [],
+  "art": {
+   "finish": "oxidised"
+  },
+  "model": null,
+  "rating": 4.8,
+  "reviews": 278,
+  "description": "Long chain with a peacock mandala pendant, jhumkas, cocktail ring, nose pin and an open kada.",
+  "details": [
+   "Long necklace, jhumkas, ring, nose pin, kada",
+   "Oxidised finish"
+  ]
+ }
+];
+
 export const LINES = {
   bridal: {
     id: 'bridal',
@@ -36,6 +451,7 @@ const S = {
 };
 
 export const PRODUCTS = [
+  ...PHOTO_SETS,
   // ───────────────────────── BRIDAL ─────────────────────────
   {
     id: 'nizami-kundan-choker',

@@ -9,11 +9,11 @@ import { SectionTitle, Divider } from '../components/Ornament';
 import { Link } from 'react-router-dom';
 
 const STEPS = [
-  ['Assay & melt', 'Every lot of silver is XRF-tested, then melted and refined to 99.9 or alloyed to 92.5 with copper.', 'ag-bar-1000'],
+  ['Assay & melt', 'Every lot of silver is XRF-tested, then melted and refined to 99.9 or alloyed to 92.5 with copper.', 'mandala-oxidised-bridal-set'],
   ['Cast & draw', 'Wire is drawn, sheets are rolled and components are cast in our Pathergatti workshop.', 'kasulaperu-temple-haaram'],
   ['Chase & engrave', 'Repoussé and chasing by hand — the Ashtalakshmi kalash alone takes four days.', 'ashtalakshmi-kalash'],
   ['Set & polish', 'Kundan, rubies and pearls are set; pieces are oxidised or gold-polished as designed.', 'nizami-kundan-choker'],
-  ['Hallmark', 'Sent to a BIS assaying centre for hallmarking and a unique 6-digit HUID.', 'lakshmi-ganesh-pooja-coin'],
+  ['Hallmark', 'Sent to a BIS assaying centre for hallmarking and a unique 6-digit HUID.', 'darpan-mirror-bridal-set'],
 ];
 
 export default function About() {

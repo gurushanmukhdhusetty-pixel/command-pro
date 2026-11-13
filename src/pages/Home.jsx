@@ -88,7 +88,7 @@ export default function Home() {
   const { products } = useStore();
   const lines = Object.values(LINES);
   const byLine = (id) => products.filter((p) => p.line === id);
-  const heroOf = { bridal: 'nizami-kundan-choker', home: 'five-wick-samai', casual: 'lotus-pendant-chain' };
+  const heroOf = { bridal: 'nizami-kundan-choker', home: 'ashtalakshmi-kalash', casual: 'everyday-choker-jhumka-set' };
   const best = products.filter((p) => p.badge === 'Bestseller' || p.rating >= 4.9).slice(0, 8);
   const rot = ['kasulaperu-temple-haaram', 'charminar-oxidised-jhumkas', 'ashtalakshmi-kalash', 'royal-carved-kada', 'peacock-kumkum-bharani', 'solitaire-stack-ring', 'royal-pooja-thali-set', 'chandbali-maang-tikka', 'ghungroo-bridal-payal', 'akhand-silver-diya']
     .map((id) => products.find((p) => p.id === id))
@@ -146,7 +146,7 @@ export default function Home() {
             <div className="hero-ring" aria-hidden="true" />
             {mobile ? (
               <div className="hero-photo">
-                <ProductImage p={products.find((x) => x.id === 'nizami-kundan-choker')} eager sizes="100vw" />
+                <ProductImage p={products.find((x) => x.id === 'mandala-oxidised-bridal-set')} eager sizes="100vw" />
               </div>
             ) : (
               <Three
